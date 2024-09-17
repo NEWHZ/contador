@@ -14,6 +14,8 @@
 </head>
 <body>
 <div class="container">
+<a href="<?= base_url('') ?>" class="btn btn-primary mb-3">Volver al Contador</a>
+
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
 
     <!-- Mostrar mensajes de éxito o error -->
@@ -114,65 +116,10 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Script para manejar el modal de edición y creación -->
 <script>
-function openAddModal() {
-    // Cambiar el título del modal a "Añadir"
-    document.getElementById("workspaceModalLabel").innerText = "Añadir Espacio de Trabajo";
-    
-    // Restablecer el formulario y preparar para insertar
-    document.getElementById("workspaceForm").reset();
-    document.getElementById("imagenPreview").innerHTML = ''; // Limpiar previsualización de imagen
-    document.getElementById("workspaceForm").action = '<?= base_url('espacios/store') ?>'; // Acción para guardar
-
-    // Abrir el modal
-    var myModal = new bootstrap.Modal(document.getElementById('workspaceModal'), {
-        keyboard: false
-    });
-    myModal.show();
-}
-
-function editEspacio(id) {
-    // Cambiar el título del modal a "Editar"
-    document.getElementById("workspaceModalLabel").innerText = "Editar Espacio de Trabajo";
-    
-    // Obtener los datos del espacio mediante AJAX
-    fetch('<?= base_url('espacios/edit/') ?>' + id)
-        .then(response => response.json())
-        .then(data => {
-            // Rellenar el formulario con los datos del espacio
-            document.getElementById("workspaceId").value = data.id;
-            document.getElementById("nombre").value = data.nombre;
-            document.getElementById("descripcion").value = data.descripcion;
-            document.getElementById("estado").value = data.estado;
-            document.getElementById("color").value = data.color_fondo;
-
-            // Previsualizar la imagen si existe
-            if (data.imagen) {
-                document.getElementById("imagenPreview").innerHTML = `<img src="data:image/jpeg;base64,${data.imagen}" class="img-thumbnail mt-2" width="100">`;
-            } else {
-                document.getElementById("imagenPreview").innerHTML = 'Sin imagen';
-            }
-
-            // Cambiar la acción del formulario para actualizar
-            document.getElementById("workspaceForm").action = '<?= base_url('espacios/update/') ?>' + id;
-
-            // Abrir el modal
-            var myModal = new bootstrap.Modal(document.getElementById('workspaceModal'), {
-                keyboard: false
-            });
-            myModal.show();
-        });
-}
-
-// Restablecer el formulario y título cuando se cierra el modal
-document.getElementById('workspaceModal').addEventListener('hidden.bs.modal', function () {
-    document.getElementById("workspaceForm").reset();
-    document.getElementById("workspaceModalLabel").innerText = "Añadir Espacio de Trabajo";
-    document.getElementById("imagenPreview").innerHTML = ''; // Limpiar previsualización de la imagen
-    document.getElementById("workspaceForm").action = '<?= base_url('espacios/store') ?>'; // Cambiar la acción del formulario para agregar
-});
+    // Definir una variable global para la URL base
+    const BASE_URL = '<?= base_url() ?>';
 </script>
+<script src="<?php echo base_url('assets/js/espacios.js'); ?>"></script>
 </body>
 </html>

@@ -50,16 +50,8 @@
 
 <body>
 <div class="d-flex flex-column min-vh-100">
-    <header class="d-flex align-items-center justify-content-between border-bottom px-3 py-2">
-        <div class="d-flex align-items-center gap-2">
-            <div class="me-2">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px">
-                    <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
-                </svg>
-            </div>
-            <h2 class="text-dark m-0">Device Time</h2>
-        </div>
-    </header>
+    <!-- Incluir el header -->
+    <?php include 'header.php'; ?>
 
     <main class="container-fluid flex-grow-1 py-4">
         <div class="row justify-content-center">
