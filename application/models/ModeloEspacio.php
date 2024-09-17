@@ -1,40 +1,45 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class ModeloEspacio extends CI_Model {
+class ModeloEspacio extends CI_Model
+{
+    protected $table = 'espacios_trabajo';  // Nombre de la tabla
 
-    // Obtener todos los espacios de trabajo (solo activos)
-    public function getAllEspacios()
+    public function __construct()
     {
-        $this->db->where('borrado_logico !=', '1'); // Excluir los espacios inactivos (borrados lógicamente)
-        $query = $this->db->get('espacios_trabajo');
-        return $query->result_array();
+        parent::__construct();
+        $this->load->database();  // Cargar la base de datos
     }
 
     // Insertar un nuevo espacio de trabajo
     public function insertEspacio($data)
     {
-        return $this->db->insert('espacios_trabajo', $data);
+        return $this->db->insert($this->table, $data);
     }
 
-    // Actualizar un espacio de trabajo existente
+    // Actualizar un espacio de trabajo
     public function updateEspacio($id, $data)
     {
+        // Se busca por el ID del espacio y luego se actualizan los datos
         $this->db->where('id', $id);
-        return $this->db->update('espacios_trabajo', $data);
+        return $this->db->update($this->table, $data);
     }
 
     // Obtener un espacio de trabajo por su ID
     public function getEspacioById($id)
     {
-        $query = $this->db->get_where('espacios_trabajo', ['id' => $id]);
-        return $query->row_array();
+        return $this->db->get_where($this->table, ['id' => $id])->row_array();
     }
 
-    // Borrado lógico de un espacio de trabajo
+    // Obtener todos los espacios de trabajo
+    public function getAllEspacios()
+    {
+        return $this->db->get($this->table)->result_array();
+    }
+
+    // Eliminar un espacio de trabajo
     public function deleteEspacio($id)
     {
-        $this->db->where('id', $id);
-        return $this->db->update('espacios_trabajo', ['estado' => 'inactivo']);
+        return $this->db->delete($this->table, ['id' => $id]);
     }
 }

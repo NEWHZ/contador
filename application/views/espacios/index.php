@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Gestión de Espacios de Trabajo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert2 -->
     <style>
         .container { margin-top: 50px; }
         .color-box { width: 30px; height: 30px; border-radius: 50%; }
@@ -16,6 +15,14 @@
 <body>
 <div class="container">
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
+
+    <!-- Mostrar mensajes de éxito o error -->
+    <?php if ($this->session->flashdata('success')): ?>
+        <div class="alert alert-success"><?= $this->session->flashdata('success') ?></div>
+    <?php endif; ?>
+    <?php if ($this->session->flashdata('error')): ?>
+        <div class="alert alert-danger"><?= $this->session->flashdata('error') ?></div>
+    <?php endif; ?>
 
     <!-- Botón para activar el modal de añadir espacio -->
     <button class="btn btn-success mb-3" onclick="openAddModal()">Añadir Espacio de Trabajo</button>
@@ -49,8 +56,11 @@
                     </td>
                     <td><div class="color-box" style="background-color: <?= $espacio['color_fondo'] ?>;"></div></td>
                     <td>
+                        <!-- Botón para abrir el modal de edición -->
                         <button class="btn btn-warning action-btn" onclick="editEspacio(<?= $espacio['id'] ?>)">Editar</button>
-                        <button class="btn btn-danger action-btn" onclick="confirmDelete(<?= $espacio['id'] ?>)">Eliminar</button>
+
+                        <!-- Botón para eliminar el espacio -->
+                        <a href="<?= base_url('espacios/delete/' . $espacio['id']) ?>" class="btn btn-danger action-btn" onclick="return confirm('¿Seguro que deseas eliminar este espacio?');">Eliminar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -104,97 +114,65 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Script para manejar el modal de edición y creación -->
 <script>
-// Muestra la alerta solo si existe un mensaje flashdata
-<?php if ($this->session->flashdata('success')): ?>
-    Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: '<?= $this->session->flashdata('success') ?>',
-        timer: 3000,
-        showConfirmButton: false
-    }).then(() => {
-        // Limpiar el flashdata después de mostrar la alerta
-        $.ajax({
-            url: '<?= base_url("espacios/clearFlashdata") ?>',
-            method: 'GET'
-        });
-    });
-<?php endif; ?>
-
-<?php if ($this->session->flashdata('error')): ?>
-    Swal.fire({
-        icon: 'error',
-        title: '¡Error!',
-        text: '<?= $this->session->flashdata('error') ?>',
-        timer: 3000,
-        showConfirmButton: false
-    }).then(() => {
-        // Limpiar el flashdata después de mostrar la alerta
-        $.ajax({
-            url: '<?= base_url("espacios/clearFlashdata") ?>',
-            method: 'GET'
-        });
-    });
-<?php endif; ?>
-
-// Función para confirmar el borrado lógico
-function confirmDelete(id) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esto!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminarlo'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '<?= base_url("espacios/delete/") ?>' + id;
-        }
-    });
-}
-
-// Función para abrir el modal de agregar
 function openAddModal() {
+    // Cambiar el título del modal a "Añadir"
     document.getElementById("workspaceModalLabel").innerText = "Añadir Espacio de Trabajo";
+    
+    // Restablecer el formulario y preparar para insertar
     document.getElementById("workspaceForm").reset();
     document.getElementById("imagenPreview").innerHTML = ''; // Limpiar previsualización de imagen
-    document.getElementById("workspaceForm").action = '<?= base_url('espacios/store') ?>';
+    document.getElementById("workspaceForm").action = '<?= base_url('espacios/store') ?>'; // Acción para guardar
+
+    // Abrir el modal
     var myModal = new bootstrap.Modal(document.getElementById('workspaceModal'), {
         keyboard: false
     });
     myModal.show();
 }
 
-// Función para abrir el modal de editar
 function editEspacio(id) {
+    // Cambiar el título del modal a "Editar"
     document.getElementById("workspaceModalLabel").innerText = "Editar Espacio de Trabajo";
+    
+    // Obtener los datos del espacio mediante AJAX
     fetch('<?= base_url('espacios/edit/') ?>' + id)
         .then(response => response.json())
         .then(data => {
+            // Rellenar el formulario con los datos del espacio
             document.getElementById("workspaceId").value = data.id;
             document.getElementById("nombre").value = data.nombre;
             document.getElementById("descripcion").value = data.descripcion;
             document.getElementById("estado").value = data.estado;
             document.getElementById("color").value = data.color_fondo;
 
+            // Previsualizar la imagen si existe
             if (data.imagen) {
                 document.getElementById("imagenPreview").innerHTML = `<img src="data:image/jpeg;base64,${data.imagen}" class="img-thumbnail mt-2" width="100">`;
             } else {
                 document.getElementById("imagenPreview").innerHTML = 'Sin imagen';
             }
 
+            // Cambiar la acción del formulario para actualizar
             document.getElementById("workspaceForm").action = '<?= base_url('espacios/update/') ?>' + id;
+
+            // Abrir el modal
             var myModal = new bootstrap.Modal(document.getElementById('workspaceModal'), {
                 keyboard: false
             });
             myModal.show();
         });
 }
+
+// Restablecer el formulario y título cuando se cierra el modal
+document.getElementById('workspaceModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById("workspaceForm").reset();
+    document.getElementById("workspaceModalLabel").innerText = "Añadir Espacio de Trabajo";
+    document.getElementById("imagenPreview").innerHTML = ''; // Limpiar previsualización de la imagen
+    document.getElementById("workspaceForm").action = '<?= base_url('espacios/store') ?>'; // Cambiar la acción del formulario para agregar
+});
 </script>
 </body>
 </html>
