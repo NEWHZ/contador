@@ -77,7 +77,7 @@
                                     <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
                                     <p class="card-text flex-grow-1"><?= $espacio['descripcion'] ?></p>
                                     <!-- Botón para abrir el modal -->
-                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal">Asignar tiempo</button>
+                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>')">Asignar tiempo</button>
                                 </div>
                             </div>
                         </div>
@@ -117,121 +117,8 @@
     </main>
 </div>
 
-<script>
-    // Código para el temporizador
-    let timerInterval;
-    let isStopwatch = false;
-    let timeElapsed = 0;
-    let countdownTime = 300; // 5 minutos por defecto
-    let isPaused = true;
-
-    // Cargar el estado desde localStorage cuando se carga la página
-    window.onload = function () {
-        const storedTime = localStorage.getItem("timeElapsed");
-        const storedPausedState = localStorage.getItem("isPaused");
-        const storedIsStopwatch = localStorage.getItem("isStopwatch");
-
-        if (storedTime !== null) {
-            timeElapsed = parseInt(storedTime);
-            isPaused = storedPausedState === "true";
-            isStopwatch = storedIsStopwatch === "true";
-            document.getElementById("initial-content").style.display = "none";
-            document.getElementById("timer-controls").style.display = "block";
-            document.getElementById("timer-type").textContent = isStopwatch ? "StopWatch Active" : "Countdown Active";
-            document.getElementById("timer-display").textContent = formatTime(timeElapsed);
-
-            if (isPaused) {
-                document.getElementById("startPauseBtn").textContent = "Continuar";
-                document.getElementById("startPauseBtn").classList.replace("btn-success", "btn-primary");
-            } else {
-                document.getElementById("startPauseBtn").textContent = "Pausar";
-                document.getElementById("startPauseBtn").classList.replace("btn-success", "btn-warning");
-                startTimer();
-            }
-        }
-    };
-
-    function showStopwatch() {
-        document.getElementById("initial-content").style.display = "none";
-        document.getElementById("timer-controls").style.display = "block";
-        document.getElementById("timer-type").textContent = "StopWatch Active";
-        document.getElementById("timer-display").textContent = "00:00:00";
-        isStopwatch = true;
-        timeElapsed = 0;
-        localStorage.setItem("isStopwatch", "true");
-    }
-
-    function showCountdown() {
-        document.getElementById("initial-content").style.display = "none";
-        document.getElementById("timer-controls").style.display = "block";
-        document.getElementById("timer-type").textContent = "Countdown Active";
-        document.getElementById("timer-display").textContent = "05:00";
-        isStopwatch = false;
-        timeElapsed = countdownTime;
-        localStorage.setItem("isStopwatch", "false");
-    }
-
-    function startPauseTimer() {
-        const startPauseBtn = document.getElementById("startPauseBtn");
-
-        if (isPaused) {
-            startTimer();
-            startPauseBtn.textContent = "Pausar";
-            startPauseBtn.classList.replace("btn-primary", "btn-warning");
-            isPaused = false;
-        } else {
-            pauseTimer();
-            startPauseBtn.textContent = "Continuar";
-            startPauseBtn.classList.replace("btn-warning", "btn-primary");
-            isPaused = true;
-        }
-        localStorage.setItem("isPaused", isPaused);
-    }
-
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (isStopwatch) {
-                timeElapsed++;
-                document.getElementById("timer-display").textContent = formatTime(timeElapsed);
-            } else {
-                if (timeElapsed > 0) {
-                    timeElapsed--;
-                    document.getElementById("timer-display").textContent = formatTime(timeElapsed);
-                } else {
-                    clearInterval(timerInterval);
-                    alert("Countdown finished!");
-                    resetTimer();
-                }
-            }
-            localStorage.setItem("timeElapsed", timeElapsed);
-        }, 1000);
-    }
-
-    function pauseTimer() {
-        clearInterval(timerInterval);
-    }
-
-    function resetTimer() {
-        clearInterval(timerInterval);
-        localStorage.removeItem("timeElapsed");
-        localStorage.removeItem("isPaused");
-        localStorage.removeItem("isStopwatch");
-        timeElapsed = isStopwatch ? 0 : countdownTime;
-        document.getElementById("timer-display").textContent = isStopwatch ? "00:00:00" : formatTime(countdownTime);
-        document.getElementById("startPauseBtn").textContent = "Empezar";
-        document.getElementById("startPauseBtn").classList.replace("btn-primary", "btn-success");
-        isPaused = true;
-    }
-
-    function formatTime(seconds) {
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-</script>
-
+<!-- Vinculación del script -->
+<script src="<?php echo base_url('assets/js/timer-core.js'); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

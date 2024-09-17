@@ -1,0 +1,49 @@
+.hidden {
+    display: none;
+}
+
+/* Estilo para las tarjetas */
+.card img {
+    max-height: 150px;
+    object-fit: cover;
+}
+
+.nav-tabs .nav-link {
+    color: #0d6efd;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    font-weight: bold;
+    border-color: #dee2e6 #dee2e6 #f8f9fa;
+}
+
+/* Estilos para el temporizador */
+.modal-body img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.timer-options {
+    text-align: center;
+}
+
+.timer-options button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+#timer-controls {
+    text-align: center;
+    display: none;
+}
+
+#timer-display {
+    font-size: 32px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
