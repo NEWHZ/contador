@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 // El controlador predeterminado que se carga si no se especifica nada
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'AsignarTiempo';
 
 // Ruta en caso de error 404 (página no encontrada)
 $route['404_override'] = '';
