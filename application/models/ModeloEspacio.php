@@ -6,7 +6,7 @@ class ModeloEspacio extends CI_Model {
     // Obtener todos los espacios de trabajo (solo activos)
     public function getAllEspacios()
     {
-        $this->db->where('estado !=', 'inactivo'); // Excluir los espacios inactivos (borrados lógicamente)
+        $this->db->where('borrado_logico !=', '1'); // Excluir los espacios inactivos (borrados lógicamente)
         $query = $this->db->get('espacios_trabajo');
         return $query->result_array();
     }
