@@ -1,45 +1,40 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class ModeloEspacio extends CI_Model
-{
-    protected $table = 'espacios_trabajo';  // Nombre de la tabla
+class ModeloEspacio extends CI_Model {
 
-    public function __construct()
+    // Obtener todos los espacios de trabajo (solo activos)
+    public function getAllEspacios()
     {
-        parent::__construct();
-        $this->load->database();  // Cargar la base de datos
+        $this->db->where('borrado_logico !=', '1'); // Excluir los espacios inactivos (borrados lógicamente)
+        $query = $this->db->get('espacios_trabajo');
+        return $query->result_array();
     }
 
     // Insertar un nuevo espacio de trabajo
     public function insertEspacio($data)
     {
-        return $this->db->insert($this->table, $data);
+        return $this->db->insert('espacios_trabajo', $data);
     }
 
-    // Actualizar un espacio de trabajo
+    // Actualizar un espacio de trabajo existente
     public function updateEspacio($id, $data)
     {
-        // Se busca por el ID del espacio y luego se actualizan los datos
         $this->db->where('id', $id);
-        return $this->db->update($this->table, $data);
+        return $this->db->update('espacios_trabajo', $data);
     }
 
     // Obtener un espacio de trabajo por su ID
     public function getEspacioById($id)
     {
-        return $this->db->get_where($this->table, ['id' => $id])->row_array();
+        $query = $this->db->get_where('espacios_trabajo', ['id' => $id]);
+        return $query->row_array();
     }
 
-    // Obtener todos los espacios de trabajo
-    public function getAllEspacios()
-    {
-        return $this->db->get($this->table)->result_array();
-    }
-
-    // Eliminar un espacio de trabajo
+    // Borrado lógico de un espacio de trabajo
     public function deleteEspacio($id)
     {
-        return $this->db->delete($this->table, ['id' => $id]);
+        $this->db->where('id', $id);
+        return $this->db->update('espacios_trabajo', ['estado' => 'inactivo']);
     }
 }
