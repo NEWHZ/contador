@@ -8,6 +8,9 @@ function openAddModal() {
 	document.getElementById("imagenPreview").innerHTML = ""; // Limpiar previsualización de imagen
 	document.getElementById("workspaceForm").action = BASE_URL + "espacios/store"; // Acción para guardar
 
+	// Restablecer la selección de la categoría
+	document.getElementById("categoria_id").value = ""; // Restablecer el selector de categorías
+
 	// Abrir el modal
 	var myModal = new bootstrap.Modal(document.getElementById("workspaceModal"), {
 		keyboard: false,
@@ -30,6 +33,9 @@ function editEspacio(id) {
 			document.getElementById("descripcion").value = data.descripcion;
 			document.getElementById("estado").value = data.estado;
 			document.getElementById("color").value = data.color_fondo;
+
+			// Establecer la categoría seleccionada
+			document.getElementById("categoria_id").value = data.categoria_id;
 
 			// Previsualizar la imagen si existe
 			if (data.imagen) {
@@ -65,4 +71,7 @@ document
 		document.getElementById("imagenPreview").innerHTML = ""; // Limpiar previsualización de la imagen
 		document.getElementById("workspaceForm").action =
 			BASE_URL + "espacios/store"; // Cambiar la acción del formulario para agregar
+
+		// Restablecer la selección de la categoría
+		document.getElementById("categoria_id").value = ""; // Restablecer el selector de categorías
 	});

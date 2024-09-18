@@ -31,10 +31,13 @@ class ModeloEspacio extends CI_Model
         return $this->db->get_where($this->table, ['id' => $id])->row_array();
     }
 
-    // Obtener todos los espacios de trabajo
+    // Obtener todos los espacios de trabajo junto con la categoría
     public function getAllEspacios()
     {
-        return $this->db->get($this->table)->result_array();
+        $this->db->select('espacios_trabajo.*, categorias.nombre as nombre_categoria');
+        $this->db->from($this->table);
+        $this->db->join('categorias', 'espacios_trabajo.categoria_id = categorias.id', 'left');
+        return $this->db->get()->result_array();
     }
 
     // Eliminar un espacio de trabajo

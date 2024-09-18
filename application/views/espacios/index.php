@@ -14,8 +14,8 @@
 </head>
 <body>
 <div class="container">
-<a href="<?= base_url('') ?>" class="btn btn-primary mb-3">Volver al Contador</a>
-
+    <a href="<?= base_url('') ?>" class="btn btn-primary mb-3">Volver al Contador</a>
+    <a href="<?= base_url('index.php/categorias') ?>" class="btn btn-primary mb-3">Agregar categoria</a>
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
 
     <!-- Mostrar mensajes de éxito o error -->
@@ -39,6 +39,7 @@
                 <th>Estado</th>
                 <th>Imagen</th>
                 <th>Color de Fondo</th>
+                <th>Categoría</th> <!-- Nueva columna -->
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -57,6 +58,7 @@
                         <?php endif; ?>
                     </td>
                     <td><div class="color-box" style="background-color: <?= $espacio['color_fondo'] ?>;"></div></td>
+                    <td><?= $espacio['nombre_categoria'] ?></td> <!-- Mostrar el nombre de la categoría -->
                     <td>
                         <!-- Botón para abrir el modal de edición -->
                         <button class="btn btn-warning action-btn" onclick="editEspacio(<?= $espacio['id'] ?>)">Editar</button>
@@ -94,6 +96,15 @@
                             <option value="activo">Activo</option>
                             <option value="inactivo">Inactivo</option>
                             <option value="mantenimiento">En Mantenimiento</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria_id" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria_id" name="categoria_id" required>
+                            <option value="">Seleccionar Categoría</option>
+                            <?php foreach ($categorias as $categoria): ?>
+                                <option value="<?= $categoria['id'] ?>"><?= $categoria['nombre'] ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">

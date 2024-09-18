@@ -16,6 +16,8 @@
 </head>
 <body>
 <div class="container">
+<a href="<?= base_url('index.php/espacios') ?>" class="btn btn-primary mb-3">Volver Gestión de Espacios</a>
+    
     <h2 class="text-center">Gestión de Categorías</h2>
 
     <!-- Mostrar mensajes de éxito o error -->
