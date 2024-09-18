@@ -56,7 +56,9 @@
     <main class="container-fluid flex-grow-1 py-4">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
+            <a href="<?php echo site_url('tablero'); ?>" class="btn btn-primary">Show Time</a>
                 <h1 class="mb-4 text-center">Asignar tiempo</h1>
+               
 
                 <!-- Fichas con grid -->
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

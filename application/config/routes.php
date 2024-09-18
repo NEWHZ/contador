@@ -40,6 +40,7 @@ $route['espacios/store'] = 'Espacios/store'; // Guardar nuevo espacio (POST)
 $route['espacios/edit/(:num)'] = 'Espacios/edit/$1'; // Mostrar formulario de edición
 $route['espacios/update/(:num)'] = 'Espacios/update/$1'; // Actualizar espacio (POST)
 $route['espacios/delete/(:num)'] = 'Espacios/delete/$1'; // Eliminar espacio (GET o POST)
+$route['tablero'] = 'asignarTiempo/tablero';
 
 // Ruta para asignar tiempo (controlador AsignarTiempo)
 $route['asignar-tiempo'] = 'AsignarTiempo/index';
