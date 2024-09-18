@@ -43,3 +43,12 @@ $route['espacios/delete/(:num)'] = 'Espacios/delete/$1'; // Eliminar espacio (GE
 
 // Ruta para asignar tiempo (controlador AsignarTiempo)
 $route['asignar-tiempo'] = 'AsignarTiempo/index';
+
+
+
+
+$route['categorias'] = 'categorias/index';
+$route['categorias/store'] = 'categorias/store';
+$route['categorias/edit/(:num)'] = 'categorias/edit/$1';
+$route['categorias/update/(:num)'] = 'categorias/update/$1';
+$route['categorias/delete/(:num)'] = 'categorias/delete/$1';
