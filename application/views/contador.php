@@ -45,6 +45,32 @@
                 height: 150px;
             }
         }
+        header {
+        background-color: #333; /* Fondo oscuro */
+        border-bottom: 1px solid #444; /* Borde inferior */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra del header */
+    }
+
+    header .nav-link {
+        color: #fff; /* Color del texto */
+        padding: 8px 12px;
+        transition: background-color 0.3s, color 0.3s; /* Transición suave */
+    }
+
+    header .nav-link:hover {
+        background-color: #555; /* Color de fondo al hacer hover */
+    }
+
+    header .nav-link.active {
+        background-color: #28a745; /* Fondo verde para el enlace activo */
+        color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para el enlace activo */
+    }
+
+    header h2 {
+        color: #fff; /* Color del título */
+    }
     </style>
 </head>
 

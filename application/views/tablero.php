@@ -48,6 +48,32 @@
             padding-left: 8rem;
             padding-right: 8rem;
         }
+        header {
+        background-color: #333; /* Fondo oscuro */
+        border-bottom: 1px solid #444; /* Borde inferior */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra del header */
+    }
+
+    header .nav-link {
+        color: #fff; /* Color del texto */
+        padding: 8px 12px;
+        transition: background-color 0.3s, color 0.3s; /* Transición suave */
+    }
+
+    header .nav-link:hover {
+        background-color: #555; /* Color de fondo al hacer hover */
+    }
+
+    header .nav-link.active {
+        background-color: #28a745; /* Fondo verde para el enlace activo */
+        color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para el enlace activo */
+    }
+
+    header h2 {
+        color: #fff; /* Color del título */
+    }
     </style>
 </head>
 <body>
@@ -64,8 +90,8 @@
                         <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
-                            <p class="card-text timer-display" id="timer-display-<?= $espacio['id'] ?>">Cargando...</p>
-                            <p class="text-muted" id="timer-status-<?= $espacio['id'] ?>">Estado</p>
+                            <p class="card-text timer-display" id="timer-display-<?= $espacio['id'] ?>">No se ha configurado el tiempo</p>
+                            <p class="text-muted" id="timer-status-<?= $espacio['id'] ?>">Inactivo</p>
                         </div>
                     </div>
                 </div>
@@ -83,30 +109,27 @@
 
                 // Retrieve stored values for each space
                 const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
-                const storedTimeElapsed = parseInt(localStorage.getItem(`timeElapsed_${spaceId}`));
-                const storedCountdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`));
+                const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
+                const storedTimeElapsed = parseInt(localStorage.getItem(`timeElapsed_${spaceId}`)) || 0;
+                const storedCountdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
                 const isPaused = localStorage.getItem(`isPaused_${spaceId}`) === "true";
 
-                // If data exists, initialize the display
-                if (!isNaN(storedTimeElapsed) || !isNaN(storedCountdownTime)) {
-                    let displayTime;
+                let displayTime;
 
-                    if (isStopwatch) {
-                        // For stopwatch, show elapsed time
-                        displayTime = storedTimeElapsed || 0;
-                    } else {
-                        // For countdown, show remaining time
-                        const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`));
-                        if (!isPaused && startTime) {
-                            const currentTime = new Date().getTime();
-                            let elapsedTime = Math.floor((currentTime - startTime) / 1000);
-                            displayTime = storedCountdownTime - elapsedTime;
+                // Determine the initial display state
+                if (isStopwatch || (!isStopwatch && storedCountdownTime > 0)) {
+                    if (startTime && !isPaused) {
+                        const currentTime = new Date().getTime();
+                        let elapsedTime = Math.floor((currentTime - startTime) / 1000);
+
+                        if (isStopwatch) {
+                            displayTime = storedTimeElapsed + elapsedTime;
                         } else {
-                            displayTime = storedCountdownTime; // When paused, show the last stored countdown time
+                            displayTime = storedCountdownTime - elapsedTime;
+                            if (displayTime < 0) displayTime = 0; // Prevent negative time
                         }
-
-                        // Avoid negative values
-                        if (displayTime < 0) displayTime = 0;
+                    } else {
+                        displayTime = isStopwatch ? storedTimeElapsed : storedCountdownTime;
                     }
 
                     // Update the display on the page
@@ -114,13 +137,11 @@
                     document.getElementById(`timer-status-${spaceId}`).textContent = isPaused ? 'Pausado' : 'En curso';
 
                     // If the timer is running, update it every second
-                    if (!isPaused) {
+                    if (!isPaused && startTime) {
                         updateTimer(spaceId, isStopwatch, displayTime);
                     }
                 } else {
-                    // If there's no timer data, display default message
-                    document.getElementById(`timer-display-${spaceId}`).textContent = 'No se ha configurado el tiempo';
-                    document.getElementById(`timer-status-${spaceId}`).textContent = 'Inactivo';
+                    resetTimerDisplay(spaceId); // If no valid timer, reset display
                 }
             })();
         <?php endforeach; ?>
@@ -128,6 +149,7 @@
 
     // Function to format time in HH:MM:SS
     function formatTime(seconds) {
+        if (isNaN(seconds) || seconds < 0) return "00:00:00"; // Default value if seconds is NaN or less than 0
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
@@ -137,8 +159,7 @@
     // Function to update the timer display
     function updateTimer(spaceId, isStopwatch, initialDisplayTime) {
         let displayTime = initialDisplayTime;
-
-        const interval = setInterval(() => {
+        const timerInterval = setInterval(() => {
             if (isStopwatch) {
                 displayTime++; // Increment for Stopwatch
             } else {
@@ -146,13 +167,26 @@
             }
 
             if (displayTime < 0) {
-                clearInterval(interval);
+                clearInterval(timerInterval);
                 displayTime = 0; // Prevent negative time for countdown
+                resetTimerDisplay(spaceId); // Reset to default state
             }
 
             document.getElementById(`timer-display-${spaceId}`).textContent = formatTime(displayTime);
             localStorage.setItem(`timeElapsed_${spaceId}`, displayTime);
         }, 1000);
+    }
+
+    // Function to reset the timer display to its initial state
+    function resetTimerDisplay(spaceId) {
+        document.getElementById(`timer-display-${spaceId}`).textContent = 'No se ha configurado el tiempo';
+        document.getElementById(`timer-status-${spaceId}`).textContent = 'Inactivo';
+        
+        // Reset local storage values
+        localStorage.removeItem(`startTime_${spaceId}`);
+        localStorage.removeItem(`timeElapsed_${spaceId}`);
+        localStorage.removeItem(`isPaused_${spaceId}`);
+        localStorage.removeItem(`countdownTime_${spaceId}`);
     }
 </script>
 
