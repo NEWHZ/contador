@@ -1,10 +1,10 @@
 let timerInterval;
 let isStopwatch = false;
 let timeElapsed = 0;
-let countdownTime = 0; // El valor predeterminado eliminado
+let countdownTime = 0;
 let isPaused = true;
-let currentSpaceId = null; // ID de la ficha actual
-let pausedAt = null; // Hora en la que se pausó
+let currentSpaceId = null;
+let pausedAt = null;
 
 // Función que abre el modal con el temporizador correspondiente a una tarjeta
 function openTimerModal(spaceId) {
@@ -118,7 +118,11 @@ function setCustomCountdown() {
 	if (!isNaN(customTime) && customTime > 0) {
 		setCountdown(customTime);
 	} else {
-		alert("Please enter a valid number of seconds");
+		Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: "Please enter a valid number of seconds",
+		});
 	}
 }
 
@@ -151,7 +155,13 @@ function startPauseTimer() {
 	localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed); // Guardar el tiempo transcurrido
 	if (!isStopwatch) {
 		// Para countdown, guardar el tiempo restante exacto
-		const remainingTime = countdownTime - (timeElapsed || elapsedTime);
+		const remainingTime =
+			countdownTime -
+			Math.floor(
+				(new Date().getTime() -
+					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
+					1000
+			);
 		localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
 	}
 }
@@ -171,6 +181,42 @@ function startTimer() {
 	}, 1000);
 }
 
+// Intervalo para enviar datos al servidor
+let syncInterval = setInterval(() => {
+	if (!isPaused && currentSpaceId) {
+		syncTimerData();
+	}
+}, 10000); // Sincronizar cada 10 segundos
+
+function syncTimerData() {
+	// Verificar si ya se ha sincronizado para evitar duplicados
+	const alreadySynced = localStorage.getItem(`isSynced_${currentSpaceId}`);
+	if (alreadySynced === "true") {
+		return; // Si ya se ha sincronizado, no enviar nuevamente
+	}
+
+	const tiempoEnSegundos = isStopwatch
+		? timeElapsed
+		: countdownTime -
+		  Math.floor(
+				(new Date().getTime() -
+					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
+					1000
+		  );
+
+	if (tiempoEnSegundos > 0) {
+		registrarAlquiler(currentSpaceId, tiempoEnSegundos)
+			.then((response) => {
+				console.log("Sincronización exitosa con la BD:", response);
+				// Marcar como sincronizado
+				localStorage.setItem(`isSynced_${currentSpaceId}`, "true");
+			})
+			.catch((error) => {
+				console.error("Error al sincronizar con la BD:", error);
+			});
+	}
+}
+
 // Pausa el temporizador
 function pauseTimer() {
 	clearInterval(timerInterval);
@@ -179,7 +225,13 @@ function pauseTimer() {
 		localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed);
 	} else {
 		// Para countdown, guardar el tiempo restante exacto
-		const remainingTime = countdownTime - timeElapsed;
+		const remainingTime =
+			countdownTime -
+			Math.floor(
+				(new Date().getTime() -
+					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
+					1000
+			);
 		localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
 	}
 }
@@ -193,6 +245,7 @@ function resetTimer() {
 	localStorage.removeItem(`timeElapsed_${currentSpaceId}`);
 	localStorage.removeItem(`pausedAt_${currentSpaceId}`);
 	localStorage.removeItem(`countdownTime_${currentSpaceId}`);
+	localStorage.removeItem(`isSynced_${currentSpaceId}`); // Limpiar la bandera de sincronización
 
 	timeElapsed = 0;
 	countdownTime = 0;
@@ -206,7 +259,6 @@ function resetTimer() {
 	pausedAt = null;
 }
 
-// Calcula y muestra el tiempo actual
 function calculateAndDisplayTime() {
 	const startTime = parseInt(
 		localStorage.getItem(`startTime_${currentSpaceId}`)
@@ -229,16 +281,39 @@ function calculateAndDisplayTime() {
 		if (remainingTime <= 0) {
 			clearInterval(timerInterval);
 			document.getElementById("timer-display").textContent = "00:00:00";
-			alert("Countdown finished!");
+
+			// Registrar el tiempo solo si es mayor a cero
+			if (countdownTime > 0) {
+				registrarAlquiler(currentSpaceId, countdownTime) // Usar el tiempo total del countdown
+					.then(() => {
+						// Mostrar alerta y cerrar el modal automáticamente
+						Swal.fire({
+							icon: "info",
+							title: "Countdown finalizado",
+							text: "El tiempo del temporizador ha finalizado.",
+							confirmButtonText: "Aceptar",
+							timer: 2000, // Cerrar la alerta después de 2 segundos
+							timerProgressBar: true,
+						}).then(() => {
+							// Cerrar el modal si está abierto
+							$("#timerModal").modal("hide");
+						});
+					})
+					.catch((error) => {
+						console.error("Error al registrar el alquiler:", error);
+					});
+			}
+
 			resetTimer();
 		} else {
+			// Guardar el tiempo restante correctamente
+			localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
 			timeElapsed = countdownTime - remainingTime; // Guardar el tiempo transcurrido correctamente
 			document.getElementById("timer-display").textContent =
 				formatTime(remainingTime);
 		}
 	}
 }
-
 // Actualiza el display al cargar
 function updateDisplay() {
 	if (isStopwatch) {
@@ -264,3 +339,106 @@ function formatTime(seconds) {
 		.toString()
 		.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
+
+function terminarStopwatch() {
+	// Detener el temporizador
+	clearInterval(timerInterval);
+
+	// Obtener el tiempo total en segundos
+	const tiempoEnSegundos = timeElapsed;
+
+	// Verificar si el tiempo es mayor a 0 antes de registrar
+	if (tiempoEnSegundos <= 0) {
+		Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: "No se puede registrar un alquiler con tiempo cero.",
+		});
+		return;
+	}
+
+	// Llamar a la función para registrar el alquiler
+	registrarAlquiler(currentSpaceId, tiempoEnSegundos)
+		.then((response) => {
+			// Marcar como sincronizado
+			localStorage.setItem(`isSynced_${currentSpaceId}`, "true");
+
+			// Mostrar alerta de SweetAlert2
+			Swal.fire({
+				icon: "success",
+				title: "Alquiler registrado",
+				text: "El tiempo ha sido registrado con éxito.",
+				confirmButtonText: "Aceptar",
+			}).then(() => {
+				// Cerrar el modal
+				$("#timerModal").modal("hide");
+				// Resetear el temporizador
+				resetTimer();
+			});
+		})
+		.catch((error) => {
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un problema al registrar el alquiler. Por favor, inténtalo de nuevo.",
+			});
+		});
+}
+
+// Función para registrar el alquiler en la base de datos
+function registrarAlquiler(espacioId, tiempoEnSegundos) {
+	return new Promise((resolve, reject) => {
+		// Evitar enviar datos con tiempo 0
+		if (tiempoEnSegundos <= 0) {
+			reject("No se puede registrar un alquiler con tiempo cero.");
+			return;
+		}
+
+		// Convertir el tiempo a horas
+		const horas = tiempoEnSegundos / 3600;
+
+		console.log("Datos enviados:", { espacioId, tiempoEnSegundos, horas });
+
+		$.ajax({
+			url: baseURL + "alquiler/registrarAlquiler", // Usar la URL base definida
+			type: "POST",
+			data: {
+				espacio_id: espacioId,
+				tiempo_uso: horas,
+				sync: true, // Indicar que esta es una sincronización periódica
+			},
+			success: function (response) {
+				console.log("Respuesta del servidor:", response);
+
+				try {
+					const result = JSON.parse(response);
+					if (result.status === "success") {
+						resolve(result);
+					} else {
+						reject(result.message);
+					}
+				} catch (e) {
+					console.error("Error al procesar la respuesta:", e);
+					reject("Hubo un problema al registrar el alquiler.");
+				}
+			},
+			error: function (error) {
+				console.error("Error al registrar el alquiler:", error);
+				reject("Error al conectar con el servidor.");
+			},
+		});
+	});
+}
+
+// Manejo de eventos de navegación
+window.addEventListener("beforeunload", () => {
+	if (currentSpaceId) {
+		syncTimerData(); // Enviar una actualización final al servidor
+	}
+});
+
+document.addEventListener("visibilitychange", () => {
+	if (document.visibilityState === "hidden" && currentSpaceId) {
+		syncTimerData(); // Enviar datos cuando la pestaña se oculta
+	}
+});

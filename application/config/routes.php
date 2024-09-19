@@ -52,3 +52,10 @@ $route['categorias/store'] = 'categorias/store';
 $route['categorias/edit/(:num)'] = 'categorias/edit/$1';
 $route['categorias/update/(:num)'] = 'categorias/update/$1';
 $route['categorias/delete/(:num)'] = 'categorias/delete/$1';
+
+
+
+$route['alquiler'] = 'alquiler/index';
+$route['alquiler/registrarAlquiler'] = 'alquiler/registrarAlquiler';
+$route['alquiler/historial'] = 'alquiler/historial';
+$route['alquiler/filtrarHistorial'] = 'alquiler/filtrarHistorial';

@@ -10,7 +10,7 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         <nav class="d-none d-md-flex gap-3">
-            <a class="text-dark" href="#">Historial</a>
+            <a class="text-dark" href="/contador/index.php/alquiler">Historial</a>
             <a class="text-dark" href="/contador/index.php/espacios">Dispositivos</a>
         </nav>
         <div class="d-flex align-items-center gap-2">
