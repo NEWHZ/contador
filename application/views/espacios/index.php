@@ -6,19 +6,61 @@
     <title>Tablero de Gestión de Espacios de Trabajo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container { margin-top: 50px; }
-        .color-box { width: 30px; height: 30px; border-radius: 50%; }
-        .action-btn { margin: 0 5px; }
-        .img-thumbnail { width: 60px; height: 60px; object-fit: cover; }
+        /* Updated Header Styling */
+        .header-container {
+            padding: 0; /* Remove default padding */
+            margin-bottom: 25px; /* Add space below the header */
+            text-align: center; /* Center align header content */
+            width: 100%; /* Ensure the header takes the full width */
+            position: absolute; /* Absolute positioning */
+            top: 0; /* Stick to the top of the page */
+            left: 0; /* Align it to the left of the screen */
+            right: 0; /* Ensure it stretches to the right */
+            background-color: white; /* Optional: Add background color */
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        .header-container h2 {
+            font-size: 24px;
+            margin: 0; /* Ensure no extra margin on the header title */
+            padding: 10px; /* Add some padding for better spacing */
+        }
+
+        .container {
+            margin-top: 80px; /* Add top margin to avoid overlap with fixed header */
+            max-width: 1200px; /* Control max-width to avoid stretching too much on large screens */
+        }
+
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        .action-btn {
+            margin: 0 5px;
+        }
+
+        .img-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-<a href="<?= base_url('') ?>" class="btn btn-primary mb-3">Volver al Contador</a>
+    <!-- Include the header -->
+    <div class="header-container">
+        <?php $this->load->view('header'); ?> 
+    </div>
+    
+    <!-- Back to Contador Button -->
+    <a href="<?= base_url('') ?>" class="btn btn-primary mb-3 back-button">Volver al Contador</a>
 
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
 
-    <!-- Mostrar mensajes de éxito o error -->
+    <!-- Display success or error messages -->
     <?php if ($this->session->flashdata('success')): ?>
         <div class="alert alert-success"><?= $this->session->flashdata('success') ?></div>
     <?php endif; ?>
@@ -26,10 +68,10 @@
         <div class="alert alert-danger"><?= $this->session->flashdata('error') ?></div>
     <?php endif; ?>
 
-    <!-- Botón para activar el modal de añadir espacio -->
+    <!-- Button to trigger the modal for adding workspace -->
     <button class="btn btn-success mb-3" onclick="openAddModal()">Añadir Espacio de Trabajo</button>
 
-    <!-- Tabla de espacios -->
+    <!-- Spaces table -->
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -51,17 +93,17 @@
                     <td><?= $espacio['estado'] ?></td>
                     <td>
                         <?php if (!empty($espacio['imagen'])): ?>
-                            <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="img-thumbnail" width="100">
+                            <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="img-thumbnail">
                         <?php else: ?>
                             Sin imagen
                         <?php endif; ?>
                     </td>
                     <td><div class="color-box" style="background-color: <?= $espacio['color_fondo'] ?>;"></div></td>
                     <td>
-                        <!-- Botón para abrir el modal de edición -->
+                        <!-- Edit space button -->
                         <button class="btn btn-warning action-btn" onclick="editEspacio(<?= $espacio['id'] ?>)">Editar</button>
 
-                        <!-- Botón para eliminar el espacio -->
+                        <!-- Delete space button -->
                         <a href="<?= base_url('espacios/delete/' . $espacio['id']) ?>" class="btn btn-danger action-btn" onclick="return confirm('¿Seguro que deseas eliminar este espacio?');">Eliminar</a>
                     </td>
                 </tr>
@@ -70,7 +112,7 @@
     </table>
 </div>
 
-<!-- Modal para agregar/editar espacios de trabajo -->
+<!-- Modal for adding/editing workspaces -->
 <div class="modal fade" id="workspaceModal" tabindex="-1" aria-labelledby="workspaceModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -99,7 +141,7 @@
                     <div class="mb-3">
                         <label for="imagen" class="form-label">Imagen de Portada</label>
                         <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
-                        <div id="imagenPreview"></div> <!-- Previsualización de la imagen -->
+                        <div id="imagenPreview"></div> <!-- Image preview -->
                     </div>
                     <div class="mb-3">
                         <label for="color" class="form-label">Color de Fondo</label>
@@ -117,7 +159,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Definir una variable global para la URL base
+    // Define a global variable for the base URL
     const BASE_URL = '<?= base_url() ?>';
 </script>
 <script src="<?php echo base_url('assets/js/espacios.js'); ?>"></script>
