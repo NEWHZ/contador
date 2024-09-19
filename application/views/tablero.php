@@ -55,10 +55,6 @@
     <!-- Include the header from contador.php -->
     <?php include 'header.php'; ?>
     
-    <div class="text-left mt-5 ms-3">
-        <a href="<?php echo site_url('asignarTiempo'); ?>" class="btn btn-primary">Asignar Tiempo</a>
-    </div>
-    
     <main class="container-fluid flex-grow-1 py-4">
         <h1 class="mb-4 text-center">Tablero de Tiempos</h1>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="spaces-container">

@@ -12,6 +12,9 @@
         <nav class="d-none d-md-flex gap-3">
             <a class="text-dark" href="#">Historial</a>
             <a class="text-dark" href="/contador/index.php/espacios">Dispositivos</a>
+            <!-- Añadir los nuevos enlaces -->
+            <a class="text-dark" href="<?php echo site_url('tablero'); ?>">Show Time</a>
+            <a class="text-dark" href="<?php echo site_url('asignarTiempo'); ?>">Asignar Tiempo</a>
         </nav>
         <div class="d-flex align-items-center gap-2">
             <button class="btn btn-outline-secondary" aria-label="Buscar">

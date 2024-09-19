@@ -56,16 +56,14 @@
     <main class="container-fluid flex-grow-1 py-4">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
-            <a href="<?php echo site_url('tablero'); ?>" class="btn btn-primary">Show Time</a>
                 <h1 class="mb-4 text-center">Asignar tiempo</h1>
-               
 
                 <!-- Fichas con grid -->
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     <!-- Mostrar los espacios activos -->
                     <?php foreach ($espacios as $espacio): ?>
                         <div class="col">
-                            <div class="card h-100">
+                            <div class="card h-100" style="background-color: <?= $espacio['color_fondo'] ?>;">
                                 <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
