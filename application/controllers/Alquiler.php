@@ -59,13 +59,48 @@ public function registrarAlquiler() {
 
     // Método opcional para aplicar filtros al historial
     public function filtrarHistorial() {
-        $filters = array(
-            'espacio_id' => $this->input->post('espacio_id'),
-            'fecha_desde' => $this->input->post('fecha_desde'),
-            'fecha_hasta' => $this->input->post('fecha_hasta')
-        );
-
-        $data['historial'] = $this->Alquiler_model->filtrarHistorial($filters);
+        // Inicializamos las variables
+        $data['total_pago'] = 0;  // Inicializar el total en 0 siempre para evitar errores
+        $data['historial'] = [];  // Inicializar el historial vacío para evitar errores
+    
+        // Si no se envían filtros, cargar todo el historial pero no mostrar el total
+        if (!$this->input->post()) {
+            // Cargar todo el historial sin filtros
+            $data['historial'] = $this->Alquiler_model->getHistorialAlquiler();
+        } else {
+            // Aplicar filtros si se envían datos POST
+            $filters = array(
+                'espacio_id' => $this->input->post('espacio_id'),
+                'categoria_id' => $this->input->post('categoria_id'),
+                'fecha_desde' => $this->input->post('fecha_desde'),
+                'fecha_hasta' => $this->input->post('fecha_hasta')
+            );
+    
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('fecha_desde', 'Fecha Desde', 'trim');
+            $this->form_validation->set_rules('fecha_hasta', 'Fecha Hasta', 'trim');
+    
+            if ($this->form_validation->run() !== FALSE) {
+                // Recuperar el historial filtrado
+                $data['historial'] = $this->Alquiler_model->filtrarHistorial($filters);
+    
+                // Calcular el total de pagos filtrados
+                foreach ($data['historial'] as $alquiler) {
+                    $data['total_pago'] += $alquiler['total_pago'];
+                }
+            }
+        }
+    
+        // Recuperar todos los espacios y categorías para los filtros
+        $data['espacios'] = $this->db->get('espacios_trabajo')->result_array();
+        $data['categorias'] = $this->db->get('categorias')->result_array();
+    
+        // Cargar la vista con los datos
         $this->load->view('alquiler/historial', $data);
     }
+    
+    
+    
+    
+    
 }

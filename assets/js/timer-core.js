@@ -189,27 +189,20 @@ let syncInterval = setInterval(() => {
 }, 10000); // Sincronizar cada 10 segundos
 
 function syncTimerData() {
-	// Verificar si ya se ha sincronizado para evitar duplicados
-	const alreadySynced = localStorage.getItem(`isSynced_${currentSpaceId}`);
-	if (alreadySynced === "true") {
-		return; // Si ya se ha sincronizado, no enviar nuevamente
-	}
-
-	const tiempoEnSegundos = isStopwatch
-		? timeElapsed
-		: countdownTime -
-		  Math.floor(
-				(new Date().getTime() -
-					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
-					1000
-		  );
+	if (isStopwatch) return; // No sincronizar si es stopwatch
+	// Solo registrar si el countdown ha terminado
+	const tiempoEnSegundos =
+		countdownTime -
+		Math.floor(
+			(new Date().getTime() -
+				parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
+				1000
+		);
 
 	if (tiempoEnSegundos > 0) {
 		registrarAlquiler(currentSpaceId, tiempoEnSegundos)
 			.then((response) => {
 				console.log("Sincronización exitosa con la BD:", response);
-				// Marcar como sincronizado
-				localStorage.setItem(`isSynced_${currentSpaceId}`, "true");
 			})
 			.catch((error) => {
 				console.error("Error al sincronizar con la BD:", error);
@@ -360,10 +353,6 @@ function terminarStopwatch() {
 	// Llamar a la función para registrar el alquiler
 	registrarAlquiler(currentSpaceId, tiempoEnSegundos)
 		.then((response) => {
-			// Marcar como sincronizado
-			localStorage.setItem(`isSynced_${currentSpaceId}`, "true");
-
-			// Mostrar alerta de SweetAlert2
 			Swal.fire({
 				icon: "success",
 				title: "Alquiler registrado",

@@ -43,23 +43,30 @@ class Alquiler_model extends CI_Model {
 
     // Opcional: Agregar un método para filtrar registros, por ejemplo, por espacio de trabajo o fecha
     public function filtrarHistorial($filters) {
-        $this->db->select('historial_alquiler.*, espacios_trabajo.nombre as nombre_espacio');
+        $this->db->select('historial_alquiler.*, espacios_trabajo.nombre as nombre_espacio, categorias.nombre as nombre_categoria');
         $this->db->from('historial_alquiler');
         $this->db->join('espacios_trabajo', 'historial_alquiler.espacio_id = espacios_trabajo.id');
-
+        $this->db->join('categorias', 'espacios_trabajo.categoria_id = categorias.id', 'left'); // LEFT JOIN para permitir espacios sin categoría
+    
         // Aplicar filtros si se proporcionan
         if (!empty($filters['espacio_id'])) {
             $this->db->where('historial_alquiler.espacio_id', $filters['espacio_id']);
         }
+        if (!empty($filters['categoria_id'])) {
+            $this->db->where('espacios_trabajo.categoria_id', $filters['categoria_id']);
+        }
         if (!empty($filters['fecha_desde'])) {
-            $this->db->where('historial_alquiler.fecha_alquiler >=', $filters['fecha_desde']);
+            $this->db->where('historial_alquiler.fecha_alquiler >=', date('Y-m-d 00:00:00', strtotime($filters['fecha_desde'])));
         }
         if (!empty($filters['fecha_hasta'])) {
-            $this->db->where('historial_alquiler.fecha_alquiler <=', $filters['fecha_hasta']);
+            $this->db->where('historial_alquiler.fecha_alquiler <=', date('Y-m-d 23:59:59', strtotime($filters['fecha_hasta'])));
         }
-
-        $this->db->order_by('fecha_alquiler', 'DESC');
+    
+        $this->db->order_by('historial_alquiler.fecha_alquiler', 'DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
+    
+    
+    
 }
