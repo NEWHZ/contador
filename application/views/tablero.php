@@ -10,9 +10,11 @@
     <style>
         /* Additional styling adjustments to fit the provided styles */
         .card {
-            height: 300px; /* Adjusted card height */
+            height: 150px;
+            width:450px; /* Adjusted card height */
             display: flex;
             flex-direction: column;
+            margin-left: 50px;
         }
         .card-body {
             text-align: center;
@@ -26,12 +28,21 @@
             font-weight: bold;
         }
         .card img {
-            max-height: 150px;
+            width: 100%;
+            height: 200px;
             object-fit: cover;
         }
+        .button-container {
+            display: flex;
+            justify-content: flex-start; /* Change to center or flex-end as needed */
+            margin-left: 20px; /* Adjust this value to move the button */
+        }
+
         .btn-primary {
             margin-top: auto;
+            margin-left: 160px;
         }
+
         /* Reduce the default margin to make better use of screen space */
         .container-fluid {
             padding-left: 8rem;
@@ -53,7 +64,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="spaces-container">
             <?php foreach ($espacios as $espacio): ?>
                 <div class="col">
-                    <div class="card h-100">
+                    <div class="card h-100" style="background-color: <?= $espacio['color_fondo'] ?>;">
                         <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
