@@ -60,6 +60,22 @@ function editEspacio(id) {
 			myModal.show();
 		});
 }
+// Selección de color de fondo
+document.querySelectorAll(".color-circle").forEach((circle) => {
+	circle.addEventListener("click", function () {
+		// Eliminar la clase 'selected' de todos los círculos
+		document
+			.querySelectorAll(".color-circle")
+			.forEach((c) => c.classList.remove("selected"));
+
+		// Añadir la clase 'selected' al círculo actual
+		this.classList.add("selected");
+
+		// Almacenar el color seleccionado en el campo oculto
+		const selectedColor = this.getAttribute("data-color");
+		document.getElementById("color").value = selectedColor;
+	});
+});
 
 // Restablecer el formulario y título cuando se cierra el modal
 document

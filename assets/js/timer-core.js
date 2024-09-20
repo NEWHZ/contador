@@ -61,55 +61,119 @@ function openTimerModal(spaceId) {
 		resetTimer();
 	}
 }
-
-// Muestra las opciones del cronómetro
-function showStopwatch() {
-	document.getElementById("initial-content").style.display = "none";
-	document.getElementById("timer-controls").style.display = "block";
-	document.getElementById("timer-type").textContent = "StopWatch Active";
-	isStopwatch = true;
-	isPaused = true;
-	timeElapsed = 0; // Inicia en 0
-	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "true");
-	localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed);
-}
-
-// Muestra las opciones del countdown con presets
+// Mostrar la configuración de countdown solo al seleccionarlo
 function showCountdown() {
 	document.getElementById("initial-content").style.display = "none";
 	document.getElementById("timer-controls").style.display = "block";
 	document.getElementById("timer-type").textContent = "Countdown Active";
 	isStopwatch = false;
 
-	// Mostrar un formulario para ingresar tiempo o seleccionar un preset solo si no se ha mostrado antes
-	if (!document.getElementById("preset-container")) {
-		const presetContainer = document.createElement("div");
-		presetContainer.id = "preset-container"; // Añadimos un ID para verificar duplicados
-		presetContainer.innerHTML = `
-            <div>
-                <h5>Select a Preset</h5>
-                <button onclick="setCountdown(300)" class="btn btn-info">5 Minutes</button>
-                <button onclick="setCountdown(600)" class="btn btn-info">10 Minutes</button>
-                <button onclick="setCountdown(1800)" class="btn btn-info">30 Minutes</button>
-            </div>
-            <div class="mt-3">
-                <h5>Or Enter Custom Time (seconds)</h5>
-                <input type="number" id="customCountdown" class="form-control" placeholder="Enter time in seconds">
-                <button onclick="setCustomCountdown()" class="btn btn-primary mt-2">Set Countdown</button>
-            </div>
-        `;
-		document.getElementById("timer-controls").appendChild(presetContainer);
-	}
+	// Asegurarnos de ocultar el contenido del Stopwatch
+	document.getElementById("countdown-settings").style.display = "block"; // Solo mostrar countdown
+	document.getElementById("startPauseBtn").style.display = "none"; // Ocultar botones hasta que se seleccione tiempo
+	document.getElementById("resetBtn").style.display = "none";
+	document.getElementById("terminateBtn").style.display = "none";
+
+	// Ocultar selectores si previamente fueron mostrados por Stopwatch
+	document.getElementById("timer-display").textContent = "00:00:00";
 }
 
-// Establecer un tiempo de cuenta regresiva de los presets
+// Mostrar la configuración del Stopwatch sin afectar Countdown
+function showStopwatch() {
+	document.getElementById("initial-content").style.display = "none";
+	document.getElementById("timer-controls").style.display = "block";
+	document.getElementById("timer-type").textContent = "StopWatch Active";
+	isStopwatch = true;
+
+	// Ocultar el contenido de Countdown y mostrar Stopwatch
+	document.getElementById("countdown-settings").style.display = "none"; // Asegurarse de ocultar countdown
+	document.getElementById("startPauseBtn").style.display = "inline-block"; // Mostrar los botones del cronómetro
+	document.getElementById("resetBtn").style.display = "inline-block";
+	document.getElementById("terminateBtn").style.display = "inline-block";
+
+	document.getElementById("timer-display").textContent = "00:00:00";
+}
+
+// Restablecer el modal cuando se cierre
+$("#timerModal").on("hidden.bs.modal", function () {
+	resetModal(); // Llamar a función para resetear el modal
+});
+
+// Resetear el contenido del modal
+function resetModal() {
+	document.getElementById("initial-content").style.display = "block";
+	document.getElementById("timer-controls").style.display = "none";
+	document.getElementById("countdown-settings").style.display = "none"; // Ocultar countdown
+	document.getElementById("timer-display").textContent = "00:00:00"; // Reiniciar el display
+}
+
+// Validar que se seleccione al menos una hora o minuto mayor que 0
+function setCustomTime() {
+	const hours = parseInt(document.getElementById("hours").value);
+	const minutes = parseInt(document.getElementById("minutes").value);
+
+	// Validar si no se seleccionó un tiempo válido
+	if (hours === 0 && minutes === 0) {
+		Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: "Por favor selecciona un tiempo válido mayor que cero.",
+			// Ajuste para mostrar el SweetAlert sobre el modal
+			customClass: {
+				popup: "swal2-modal z-index-over-modal",
+			},
+		});
+		return; // Detener la ejecución si no se seleccionó un tiempo válido
+	}
+
+	// Convertimos las horas y minutos a segundos
+	const totalSeconds = hours * 3600 + minutes * 60;
+
+	// Establecer el countdown
+	setCountdown(totalSeconds);
+
+	// Mostrar los botones de control una vez que se ha establecido un tiempo válido
+	document.getElementById("startPauseBtn").style.display = "inline-block";
+	document.getElementById("resetBtn").style.display = "inline-block";
+	document.getElementById("terminateBtn").style.display = "inline-block";
+}
+
+// Establecer el countdown y actualizar el display
 function setCountdown(seconds) {
 	countdownTime = seconds;
-	timeElapsed = 0; // Reset timeElapsed since we're starting fresh
+	timeElapsed = 0; // Reiniciar el tiempo transcurrido
 	isPaused = true;
 	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
 	localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
+
+	// Actualizar el display con el tiempo seleccionado
 	updateDisplay();
+}
+
+// Actualiza el display cuando se selecciona un tiempo
+function updateDisplay() {
+	if (isStopwatch) {
+		const currentTimeElapsed =
+			parseInt(localStorage.getItem(`timeElapsed_${currentSpaceId}`)) || 0;
+		document.getElementById("timer-display").textContent =
+			formatTime(currentTimeElapsed);
+	} else {
+		const remainingTime =
+			parseInt(localStorage.getItem(`countdownTime_${currentSpaceId}`)) ||
+			countdownTime;
+		document.getElementById("timer-display").textContent =
+			formatTime(remainingTime);
+	}
+}
+
+// Formatea el tiempo en formato HH:MM:SS
+function formatTime(seconds) {
+	const hrs = Math.floor(seconds / 3600);
+	const mins = Math.floor((seconds % 3600) / 60);
+	const secs = seconds % 60;
+	return `${hrs.toString().padStart(2, "0")}:${mins
+		.toString()
+		.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
 
 // Establecer un tiempo de cuenta regresiva personalizado
