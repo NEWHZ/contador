@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Tiempos</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>"> <!-- Include styles.css -->
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>">
     <script src="<?php echo base_url('assets/js/timer-core.js'); ?>"></script>
+
+    <!-- Incluir SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .card {
@@ -84,11 +87,15 @@
     </main>
 </div>
 
+<!-- Agregar un archivo de sonido de alarma -->
+<audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         <?php foreach ($espacios as $espacio): ?>
             (function() {
                 const spaceId = '<?= $espacio['id'] ?>';
+                let alarmTriggered = false; // Bandera para controlar si ya se mostró la alarma
 
                 // Función que actualiza el display de tiempo para un espacio específico
                 function refreshDisplay() {
@@ -116,6 +123,12 @@
                         } else {
                             const remainingTime = countdownTime - elapsedTime;
                             displayTime = formatTime(Math.max(remainingTime, 0)); // Evita que sea negativo
+
+                            // Si el tiempo restante es 0 y la alarma aún no se ha disparado
+                            if (remainingTime <= 0 && !alarmTriggered) {
+                                triggerAlarm(); // Mostrar la alarma
+                                alarmTriggered = true; // Prevenir que la alarma se dispare más de una vez
+                            }
                         }
                     }
 
@@ -131,6 +144,21 @@
                 setInterval(() => {
                     refreshDisplay();
                 }, 1000);
+
+                // Función para mostrar la alarma usando SweetAlert y reproducir sonido
+                function triggerAlarm() {
+                    // Reproducir sonido de alarma
+                    const alarmSound = document.getElementById('alarm-sound');
+                    alarmSound.play();
+
+                    // Mostrar alerta visual con SweetAlert2
+                    Swal.fire({
+                        title: '¡Tiempo terminado!',
+                        text: 'El tiempo del espacio ha llegado a su fin.',
+                        icon: 'warning',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
             })();
         <?php endforeach; ?>
     });

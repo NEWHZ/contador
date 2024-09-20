@@ -13,113 +13,79 @@
     <script src="<?php echo base_url('assets/js/timer-core.js'); ?>"></script>
 
     <style>
-        .card {
-            height: auto;
-            min-height: 300px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-body {
-            text-align: center;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card img {
-            max-height: 150px;
-            object-fit: cover;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
+        /* Botones personalizados */
+        .timer-options button {
+            padding: 12px 24px;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #333;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            color: #555;
-            margin-bottom: 10px;
-        }
-
-        .btn-primary {
-            background-color: #0f4c75;
-            border-color: #0f4c75;
-            margin-top: auto;
-        }
-
-        .btn-primary:hover {
-            background-color: #3282b8;
-            border-color: #3282b8;
-        }
-
-        #timerModal .modal-header {
-            background-color: #0f4c75;
+            border-radius: 25px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             color: white;
         }
 
-        #timerModal .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .timer-options button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
-        #timerModal .modal-body {
-            padding: 20px;
-        }
-
-        #timerModal .btn-success {
+        .btn-success {
             background-color: #28a745;
-            border-color: #28a745;
         }
 
-        #timerModal .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-        }
-
-        #timerModal .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        #timerModal .btn-danger {
+        .btn-danger {
             background-color: #dc3545;
-            border-color: #dc3545;
         }
 
-        #timer-display {
-            font-size: 2rem;
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Cambiar el color del botón Asignar Tiempo a azul oscuro */
+        .btn-primary {
+            background-color: #003366;
+        }
+
+        .btn-primary:hover {
+            background-color: #002244;
+        }
+
+        /* Animación e imagen en el Timer Placeholder */
+        .timer-image-placeholder {
+            background: linear-gradient(135deg, #3282b8, #0f4c75);
+            color: white;
+            font-size: 1.5rem;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .timer-options {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 10px;
+            height: 150px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            animation: pulse 2s infinite;
         }
 
-        .modal-body .btn {
-            margin: 5px;
-            width: 100px;
+        .timer-image-placeholder img {
+            width: 80px;
+            height: 80px;
         }
 
-        .flex-column {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container-fluid {
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
@@ -155,25 +121,43 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="timerModalLabel">Choose Timer</h5>
+                        <h5 class="modal-title" id="timerModalLabel">Eleccion de Timer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body text-center">
+
+                        <!-- Improved Image Section or Placeholder with Decorative Background -->
                         <div id="initial-content">
-                            <img src="image.png" alt="Timer Image" />
-                            <p>Please select a timer option below to begin. You can either choose to start a Stopwatch or set a Countdown.</p>
-                            <div class="timer-options">
-                                <button onclick="showStopwatch()" class="btn btn-success">StopWatch</button>
-                                <button onclick="showCountdown()" class="btn btn-danger">CountDown</button>
+                            <div class="timer-image-placeholder">
+                                <img src="https://cdn-icons-png.flaticon.com/512/1892/1892001.png" alt="Timer Icon" />
+                            </div>
+                            
+                            <p class="px-3">
+                            Por favor selecciona una opción de temporizador a continuación para comenzar. Puedes elegir iniciar un cronómetro o establecer una cuenta regresiva."
+                            </p>
+
+                            <!-- Aligned Buttons with Spacing -->
+                            <div class="timer-options d-flex justify-content-center gap-3">
+                                <button onclick="showStopwatch()" class="btn btn-success">
+                                    StopWatch
+                                </button>
+                                <button onclick="showCountdown()" class="btn btn-danger">
+                                    CountDown
+                                </button>
                             </div>
                         </div>
 
-                        <div id="timer-controls">
-                            <h2 id="timer-type">StopWatch/CountDown</h2>
-                            <div id="timer-display">00:00:00</div>
-                            <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()">Empezar</button>
-                            <button class="btn btn-danger" onclick="resetTimer()">Reiniciar</button>
-                            <button class="btn btn-primary" onclick="terminarStopwatch()">Terminar</button>
+                        <!-- Timer Controls Section -->
+                        <div id="timer-controls" class="mt-4" style="display: none;">
+                            <h2 id="timer-type" class="mb-4">StopWatch/CountDown</h2>
+                            <div id="timer-display" class="mb-3" style="font-size: 2.5rem;">00:00:00</div>
+
+                            <!-- Control Buttons -->
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()">Empezar</button>
+                                <button class="btn btn-danger" onclick="resetTimer()">Reiniciar</button>
+                                <button class="btn btn-primary" onclick="terminarStopwatch()">Terminar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
