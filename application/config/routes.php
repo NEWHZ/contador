@@ -59,3 +59,4 @@ $route['alquiler'] = 'alquiler/index';
 $route['alquiler/registrarAlquiler'] = 'alquiler/registrarAlquiler';
 $route['alquiler/historial'] = 'alquiler/historial';
 $route['alquiler/filtrarHistorial'] = 'alquiler/filtrarHistorial';
+$route['tablero'] = 'AsignarTiempo/mostrarTablero';  // Esto llamará al método que maneja el tablero
