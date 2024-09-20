@@ -65,49 +65,78 @@
 
                 <!-- Fichas con grid -->
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    <!-- Mostrar los espacios activos -->
-                    <?php foreach ($espacios as $espacio): ?>
-                        <div class="col">
-                            <div class="card h-100">
-                                <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
-                                    <p class="card-text flex-grow-1"><?= $espacio['descripcion'] ?></p>
-                                    <!-- Botón para abrir el modal -->
-                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>')">Asignar tiempo</button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+    <!-- Mostrar los espacios activos -->
+    <?php foreach ($espacios as $espacio): ?>
+        <div class="col">
+            <!-- Añadir el color de fondo en línea -->
+            <div class="card h-100" style="background-color: <?= htmlspecialchars($espacio['color_fondo']); ?>;">
+                <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><?= htmlspecialchars($espacio['nombre']); ?></h5>
+                    <p class="card-text flex-grow-1"><?= htmlspecialchars($espacio['descripcion']); ?></p>
+                    <!-- Botón para abrir el modal -->
+                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>')">Asignar tiempo</button>
                 </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
             </div>
         </div>
 
         <!-- Modal -->
   <!-- Modal -->
+<!-- Modal -->
 <div class="modal fade" id="timerModal" tabindex="-1" aria-labelledby="timerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="timerModalLabel">Choose Timer</h5>
+                <h5 class="modal-title" id="timerModalLabel">Elige Temporizador</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="initial-content">
                     <img src="image.png" alt="Timer Image" />
-                    <p>Please select a timer option below to begin. You can either choose to start a Stopwatch or set a Countdown.</p>
+                    <p>Por favor selecciona una opción de temporizador. Puedes elegir un Cronómetro o una Cuenta regresiva.</p>
                     <div class="timer-options">
                         <button onclick="showStopwatch()" class="btn btn-success">StopWatch</button>
                         <button onclick="showCountdown()" class="btn btn-danger">CountDown</button>
                     </div>
                 </div>
 
-                <div id="timer-controls">
+                <!-- Controles de temporizador -->
+                <div id="timer-controls" style="display: none;">
                     <h2 id="timer-type">StopWatch/CountDown</h2>
                     <div id="timer-display">00:00:00</div>
-                    <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()">Empezar</button>
-                    <button class="btn btn-danger" onclick="resetTimer()">Reiniciar</button>
-                    <button class="btn btn-primary" onclick="terminarStopwatch()">Terminar</button> <!-- Nuevo botón -->
+                    <!-- Estos botones estarán ocultos inicialmente -->
+                    <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()" style="display: none;">Empezar</button>
+                    <button class="btn btn-danger" id="resetBtn" onclick="resetTimer()" style="display: none;">Reiniciar</button>
+                    <button class="btn btn-primary" id="terminateBtn" onclick="terminarStopwatch()" style="display: none;">Terminar</button>
+                </div>
+
+                <!-- Nuevo selector de horas y minutos para Countdown -->
+                <div id="countdown-settings" style="display: none;">
+                    <h5>Selecciona el tiempo máximo</h5>
+                    <div class="row">
+                        <div class="col">
+                            <label for="hours">Horas (0-23):</label>
+                            <select id="hours" class="form-control">
+                                <?php for ($i = 0; $i <= 23; $i++): ?>
+                                    <option value="<?= $i ?>"><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="minutes">Minutos (0-59):</label>
+                            <select id="minutes" class="form-control">
+                                <?php for ($i = 0; $i <= 59; $i++): ?>
+                                    <option value="<?= $i ?>"><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="setCustomTime()" class="btn btn-primary mt-2">Establecer Countdown</button>
                 </div>
             </div>
         </div>
