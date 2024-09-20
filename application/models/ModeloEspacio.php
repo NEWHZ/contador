@@ -28,11 +28,16 @@ class ModeloEspacio extends CI_Model
     }
 
     // Obtener un espacio de trabajo por su ID
-    public function getEspacioById($id)
-    {
-        // Retornar los datos del espacio de trabajo, incluso si ha sido borrado lógicamente
-        return $this->db->get_where($this->table, ['id' => $id])->row_array();
-    }
+  // Obtener un espacio de trabajo por su ID, incluyendo la categoría
+public function getEspacioById($id)
+{
+    $this->db->select('espacios_trabajo.*, categorias.nombre as nombre_categoria');
+    $this->db->from($this->table);
+    $this->db->join('categorias', 'espacios_trabajo.categoria_id = categorias.id', 'left');
+    $this->db->where('espacios_trabajo.id', $id);
+    return $this->db->get()->row_array();
+}
+
 
     // Obtener todos los espacios de trabajo que no han sido eliminados lógicamente
     public function getAllEspacios()

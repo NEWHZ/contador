@@ -62,9 +62,18 @@ class Alquiler_model extends CI_Model {
             $this->db->where('historial_alquiler.fecha_alquiler <=', date('Y-m-d 23:59:59', strtotime($filters['fecha_hasta'])));
         }
     
+        // Ordenar los resultados por fecha de alquiler
         $this->db->order_by('historial_alquiler.fecha_alquiler', 'DESC');
+    
         $query = $this->db->get();
-        return $query->result_array();
+    
+        // Verificar si hay resultados y retornarlos
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        } else {
+            // Si no se encontraron resultados, devolver un array vacío
+            return [];
+        }
     }
     
     

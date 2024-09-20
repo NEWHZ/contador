@@ -53,21 +53,12 @@ public function registrarAlquiler() {
 
     // Método para mostrar el historial de alquileres
     public function historial() {
-        $data['historial'] = $this->Alquiler_model->getHistorialAlquiler();
-        $this->load->view('alquiler/historial', $data);
-    }
-
-    // Método opcional para aplicar filtros al historial
-    public function filtrarHistorial() {
         // Inicializamos las variables
         $data['total_pago'] = 0;  // Inicializar el total en 0 siempre para evitar errores
         $data['historial'] = [];  // Inicializar el historial vacío para evitar errores
     
-        // Si no se envían filtros, cargar todo el historial pero no mostrar el total
-        if (!$this->input->post()) {
-            // Cargar todo el historial sin filtros
-            $data['historial'] = $this->Alquiler_model->getHistorialAlquiler();
-        } else {
+        // Verificamos si se envió el formulario de filtros (usando POST)
+        if ($this->input->server('REQUEST_METHOD') === 'POST') {
             // Aplicar filtros si se envían datos POST
             $filters = array(
                 'espacio_id' => $this->input->post('espacio_id'),
@@ -81,7 +72,7 @@ public function registrarAlquiler() {
             $this->form_validation->set_rules('fecha_hasta', 'Fecha Hasta', 'trim');
     
             if ($this->form_validation->run() !== FALSE) {
-                // Recuperar el historial filtrado
+                // Si el formulario de filtro es válido, aplicamos los filtros
                 $data['historial'] = $this->Alquiler_model->filtrarHistorial($filters);
     
                 // Calcular el total de pagos filtrados
@@ -89,6 +80,9 @@ public function registrarAlquiler() {
                     $data['total_pago'] += $alquiler['total_pago'];
                 }
             }
+        } else {
+            // Si no se han enviado filtros, cargar todo el historial sin filtrar
+            $data['historial'] = $this->Alquiler_model->getHistorialAlquiler();
         }
     
         // Recuperar todos los espacios y categorías para los filtros
