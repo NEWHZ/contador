@@ -6,17 +6,27 @@
     <title>Gestión de Categorías</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .container { margin-top: 50px; }
+
+        /* Estilos responsivos para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .table td i {
+                font-size: 1.5rem;
+                margin-right: 10px;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-<a href="<?= base_url('index.php/espacios') ?>" class="btn btn-primary mb-3">Volver Gestión de Espacios</a>
+    <a href="<?= base_url('index.php/espacios') ?>" class="btn btn-primary mb-3">Volver Gestión de Espacios</a>
     
     <h2 class="text-center">Gestión de Categorías</h2>
 
@@ -44,29 +54,32 @@
     <button class="btn btn-success mb-3" onclick="openAddModal()">Añadir Categoría</button>
 
     <!-- Tabla de categorías -->
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($categorias as $categoria): ?>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
                 <tr>
-                    <td><?= $categoria['id'] ?></td>
-                    <td><?= $categoria['nombre'] ?></td>
-                    <td><?= $categoria['precio'] ?></td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editCategoria(<?= $categoria['id'] ?>)">Editar</button>
-                        <button class="btn btn-danger" onclick="deleteCategoria(<?= $categoria['id'] ?>)">Eliminar</button>
-                    </td>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($categorias as $categoria): ?>
+                    <tr>
+                        <td><?= $categoria['id'] ?></td>
+                        <td><?= $categoria['nombre'] ?></td>
+                        <td><?= $categoria['precio'] ?></td>
+                        <td>
+                            <!-- Iconos de acciones -->
+                            <i class="fas fa-edit text-warning" title="Editar" onclick="editCategoria(<?= $categoria['id'] ?>)"></i>
+                            <i class="fas fa-trash text-danger" title="Eliminar" onclick="deleteCategoria(<?= $categoria['id'] ?>)"></i>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal para agregar/editar categoría -->

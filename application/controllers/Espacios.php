@@ -118,4 +118,24 @@ class Espacios extends CI_Controller {
             echo json_encode($espacio);
         }
     }
+
+    public function getDetails($id)
+    {
+        $espacio = $this->ModeloEspacio->getEspacioById($id);
+    
+        if (empty($espacio)) {
+            // Si el espacio no existe, devolvemos un error 404
+            show_404();
+        } else {
+            // Convertir la imagen a base64 antes de enviar la respuesta JSON
+            if (!empty($espacio['imagen'])) {
+                $espacio['imagen'] = base64_encode($espacio['imagen']);
+            }
+    
+            // Devolver la respuesta en formato JSON
+            echo json_encode($espacio);
+        }
+    }
+    
+
 }
