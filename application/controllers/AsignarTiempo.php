@@ -6,25 +6,18 @@ class AsignarTiempo extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
+        // Cargar el modelo que será utilizado para obtener los espacios activos
         $this->load->model('ModeloAsignarTiempo');
-        $this->load->helper('url'); // For using base_url()
+        $this->load->helper('url'); // Para usar base_url()
     }
 
+    // Método para cargar la vista con los espacios activos
     public function index()
     {
-        // Fetch active spaces from the model
+        // Obtener los espacios de trabajo que están activos
         $data['espacios'] = $this->ModeloAsignarTiempo->getActiveEspacios();
-        // Load the main view to assign time
+
+        // Cargar la vista y pasar los datos de los espacios activos
         $this->load->view('contador', $data);
     }
-
-    // New method to load the tablero view
-    public function tablero()
-    {
-        // Fetch active spaces from the database
-        $data['espacios'] = $this->ModeloAsignarTiempo->getActiveEspacios();
-        // Load the tablero view with the spaces data
-        $this->load->view('tablero', $data);
-    }
-    
 }
