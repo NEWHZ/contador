@@ -1,13 +1,29 @@
 <!-- header.php -->
-<header class="d-flex align-items-center justify-content-between border-bottom px-3 py-2">
-    <div class="d-flex align-items-center gap-2">
-        <div class="me-2">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" aria-hidden="true">
-                <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+<?php
+    // Obtener la URI actual para determinar qué enlace está activo
+    $uri_segments = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+    $current_page = end($uri_segments);
+?>
+
+<header class="d-flex align-items-center justify-content-between border-bottom px-3 py-2 bg-dark">
+    <!-- Botón de menú principal -->
+    <div class="dropdown">
+        <button class="btn btn-outline-light dropdown-toggle" type="button" id="mainMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <!-- Ícono de menú hamburguesa -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
             </svg>
-        </div>
-        <h2 class="text-dark m-0">Device Time</h2>
+        </button>
+
+        <!-- Menú desplegable -->
+        <ul class="dropdown-menu" aria-labelledby="mainMenuButton">
+            <li><a class="dropdown-item <?php echo $current_page == 'alquiler' ? 'active' : ''; ?>" href="/contador/index.php/alquiler">Historial</a></li>
+            <li><a class="dropdown-item <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a></li>
+            <li><a class="dropdown-item <?php echo $current_page == 'tablero' ? 'active' : ''; ?>" href="<?php echo site_url('tablero'); ?>">Show Time</a></li>
+            <li><a class="dropdown-item <?php echo $current_page == 'asignarTiempo' ? 'active' : ''; ?>" href="<?php echo site_url('asignarTiempo'); ?>">Asignar Tiempo</a></li>
+        </ul>
     </div>
+<<<<<<< HEAD
     <div class="d-flex align-items-center gap-3">
         <nav class="d-none d-md-flex gap-3">
             <a class="text-dark" href="/contador/index.php/alquiler">Historial</a>
@@ -26,5 +42,11 @@
             </button>
             <div class="rounded-circle bg-cover" style="width: 40px; height: 40px; background-image: url('https://cdn.usegalileo.ai/stability/65cdad6c-eb2a-425d-8af2-bb790ed7ef2d.png');" aria-label="Perfil de Usuario"></div>
         </div>
+=======
+
+    <!-- Título del sistema al lado derecho -->
+    <div class="d-flex align-items-center">
+        <h2 class="text-light m-0">Device Time</h2>
+>>>>>>> vista-contador
     </div>
 </header>
