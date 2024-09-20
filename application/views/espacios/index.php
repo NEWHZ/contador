@@ -5,26 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Gestión de Espacios de Trabajo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
+
     <style>
         .container { margin-top: 50px; }
         .color-box { width: 30px; height: 30px; border-radius: 50%; }
-        .action-btn { margin: 0 5px; }
         .img-thumbnail { width: 60px; height: 60px; object-fit: cover; }
     </style>
 </head>
 <body>
 <div class="container">
     <a href="<?= base_url('') ?>" class="btn btn-primary mb-3">Volver al Contador</a>
-    <a href="<?= base_url('index.php/categorias') ?>" class="btn btn-primary mb-3">Agregar categoria</a>
+    <a href="<?= base_url('index.php/categorias') ?>" class="btn btn-primary mb-3">Agregar categoría</a>
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
 
-    <!-- Mostrar mensajes de éxito o error -->
-    <?php if ($this->session->flashdata('success')): ?>
-        <div class="alert alert-success"><?= $this->session->flashdata('success') ?></div>
-    <?php endif; ?>
-    <?php if ($this->session->flashdata('error')): ?>
-        <div class="alert alert-danger"><?= $this->session->flashdata('error') ?></div>
-    <?php endif; ?>
+    <!-- Mostrar mensajes con SweetAlert2 -->
+    <script>
+        <?php if ($this->session->flashdata('success')): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '<?= $this->session->flashdata('success') ?>',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        <?php endif; ?>
+
+        <?php if ($this->session->flashdata('error')): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '<?= $this->session->flashdata('error') ?>',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        <?php endif; ?>
+    </script>
 
     <!-- Botón para activar el modal de añadir espacio -->
     <button class="btn btn-success mb-3" onclick="openAddModal()">Añadir Espacio de Trabajo</button>
@@ -39,7 +55,7 @@
                 <th>Estado</th>
                 <th>Imagen</th>
                 <th>Color de Fondo</th>
-                <th>Categoría</th> <!-- Nueva columna -->
+                <th>Categoría</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -58,13 +74,13 @@
                         <?php endif; ?>
                     </td>
                     <td><div class="color-box" style="background-color: <?= $espacio['color_fondo'] ?>;"></div></td>
-                    <td><?= $espacio['nombre_categoria'] ?></td> <!-- Mostrar el nombre de la categoría -->
+                    <td><?= $espacio['nombre_categoria'] ?></td>
                     <td>
-                        <!-- Botón para abrir el modal de edición -->
-                        <button class="btn btn-warning action-btn" onclick="editEspacio(<?= $espacio['id'] ?>)">Editar</button>
-
-                        <!-- Botón para eliminar el espacio -->
-                        <a href="<?= base_url('espacios/delete/' . $espacio['id']) ?>" class="btn btn-danger action-btn" onclick="return confirm('¿Seguro que deseas eliminar este espacio?');">Eliminar</a>
+                        <!-- Botón para editar -->
+                        <button class="btn btn-warning" onclick="editEspacio(<?= $espacio['id'] ?>)">Editar</button>
+                        
+                        <!-- Botón para eliminar con confirmación -->
+                        <button class="btn btn-danger" onclick="confirmDelete(<?= $espacio['id'] ?>)">Eliminar</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -128,9 +144,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Definir una variable global para la URL base
     const BASE_URL = '<?= base_url() ?>';
+
+    // Confirmación de eliminación con SweetAlert2
+    function confirmDelete(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = BASE_URL + 'espacios/delete/' + id;
+            }
+        });
+    }
 </script>
-<script src="<?php echo base_url('assets/js/espacios.js'); ?>"></script>
+<script src="<?= base_url('assets/js/espacios.js'); ?>"></script> <!-- Enlace al JS externo -->
 </body>
 </html>
