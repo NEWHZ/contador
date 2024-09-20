@@ -1,84 +1,90 @@
 let timerInterval;
 let isStopwatch = false;
-<<<<<<< HEAD
-let timeElapsed = 0;
-=======
->>>>>>> vista-contador
 let countdownTime = 0;
 let isPaused = true;
 let currentSpaceId = null;
 let pausedAt = null;
 
 function openTimerModal(spaceId) {
-    currentSpaceId = spaceId;
+	currentSpaceId = spaceId;
 
-    // Limpiar cualquier temporizador previo al abrir el modal
-    if (timerInterval) {
-        clearInterval(timerInterval); // Limpiamos cualquier intervalo previo
-    }
+	// Limpiar cualquier temporizador previo al abrir el modal
+	if (timerInterval) {
+		clearInterval(timerInterval); // Limpiamos cualquier intervalo previo
+	}
 
-    // Cargar valores almacenados en localStorage
-    const storedStartTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
-    const storedPausedState = localStorage.getItem(`isPaused_${spaceId}`);
-    const storedIsStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
-    const storedCountdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
+	// Cargar valores almacenados en localStorage
+	const storedStartTime =
+		parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
+	const storedPausedState = localStorage.getItem(`isPaused_${spaceId}`);
+	const storedIsStopwatch =
+		localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
+	const storedCountdownTime =
+		parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
 
-    document.getElementById("initial-content").style.display = "block";
-    document.getElementById("timer-controls").style.display = "none";
+	document.getElementById("initial-content").style.display = "block";
+	document.getElementById("timer-controls").style.display = "none";
 
-    // Eliminar cualquier preset duplicado
-    const presetContainer = document.getElementById("preset-container");
-    if (presetContainer) presetContainer.remove();
+	// Eliminar cualquier preset duplicado
+	const presetContainer = document.getElementById("preset-container");
+	if (presetContainer) presetContainer.remove();
 
-    // Si hay un temporizador guardado, mostrar los controles del temporizador
-    if (storedStartTime > 0) {
-        countdownTime = storedCountdownTime;
-        pausedAt = storedPausedState === "true" ? parseInt(localStorage.getItem(`pausedAt_${spaceId}`)) : null;
-        isPaused = storedPausedState === "true";
-        isStopwatch = storedIsStopwatch;
+	// Si hay un temporizador guardado, mostrar los controles del temporizador
+	if (storedStartTime > 0) {
+		countdownTime = storedCountdownTime;
+		pausedAt =
+			storedPausedState === "true"
+				? parseInt(localStorage.getItem(`pausedAt_${spaceId}`))
+				: null;
+		isPaused = storedPausedState === "true";
+		isStopwatch = storedIsStopwatch;
 
-        document.getElementById("initial-content").style.display = "none";
-        document.getElementById("timer-controls").style.display = "block";
-        document.getElementById("timer-type").textContent = isStopwatch ? "StopWatch Active" : "Countdown Active";
+		document.getElementById("initial-content").style.display = "none";
+		document.getElementById("timer-controls").style.display = "block";
+		document.getElementById("timer-type").textContent = isStopwatch
+			? "StopWatch Active"
+			: "Countdown Active";
 
-        // Actualizar el display con el tiempo actual
-        updateDisplay();
+		// Actualizar el display con el tiempo actual
+		updateDisplay();
 
-        // Si no está pausado, continuar con el temporizador
-        if (!isPaused) {
-            startTimer(); // Iniciar el temporizador
-            document.getElementById("startPauseBtn").textContent = "Pausar";
-            document.getElementById("startPauseBtn").classList.remove("btn-success", "btn-primary");
-            document.getElementById("startPauseBtn").classList.add("btn-warning");
-        } else {
-            document.getElementById("startPauseBtn").textContent = "Continuar";
-            document.getElementById("startPauseBtn").classList.remove("btn-warning");
-            document.getElementById("startPauseBtn").classList.add("btn-primary");
-        }
-    } else {
-        resetTimer();
-    }
+		// Si no está pausado, continuar con el temporizador
+		if (!isPaused) {
+			startTimer(); // Iniciar el temporizador
+			document.getElementById("startPauseBtn").textContent = "Pausar";
+			document
+				.getElementById("startPauseBtn")
+				.classList.remove("btn-success", "btn-primary");
+			document.getElementById("startPauseBtn").classList.add("btn-warning");
+		} else {
+			document.getElementById("startPauseBtn").textContent = "Continuar";
+			document.getElementById("startPauseBtn").classList.remove("btn-warning");
+			document.getElementById("startPauseBtn").classList.add("btn-primary");
+		}
+	} else {
+		resetTimer();
+	}
 }
 
 function showStopwatch() {
-    document.getElementById("initial-content").style.display = "none";
-    document.getElementById("timer-controls").style.display = "block";
-    document.getElementById("timer-type").textContent = "StopWatch Active";
-    isStopwatch = true;
-    isPaused = true;
-    localStorage.setItem(`isStopwatch_${currentSpaceId}`, "true");
+	document.getElementById("initial-content").style.display = "none";
+	document.getElementById("timer-controls").style.display = "block";
+	document.getElementById("timer-type").textContent = "StopWatch Active";
+	isStopwatch = true;
+	isPaused = true;
+	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "true");
 }
 
 function showCountdown() {
-    document.getElementById("initial-content").style.display = "none";
-    document.getElementById("timer-controls").style.display = "block";
-    document.getElementById("timer-type").textContent = "Countdown Active";
-    isStopwatch = false;
+	document.getElementById("initial-content").style.display = "none";
+	document.getElementById("timer-controls").style.display = "block";
+	document.getElementById("timer-type").textContent = "Countdown Active";
+	isStopwatch = false;
 
-    if (!document.getElementById("preset-container")) {
-        const presetContainer = document.createElement("div");
-        presetContainer.id = "preset-container";
-        presetContainer.innerHTML = `
+	if (!document.getElementById("preset-container")) {
+		const presetContainer = document.createElement("div");
+		presetContainer.id = "preset-container";
+		presetContainer.innerHTML = `
             <div>
                 <h5>Select a Preset</h5>
                 <button onclick="setCountdown(300)" class="btn btn-info">5 Minutes</button>
@@ -91,54 +97,54 @@ function showCountdown() {
                 <button onclick="setCustomCountdown()" class="btn btn-primary mt-2">Set Countdown</button>
             </div>
         `;
-        document.getElementById("timer-controls").appendChild(presetContainer);
-    }
+		document.getElementById("timer-controls").appendChild(presetContainer);
+	}
 }
 
 function setCountdown(seconds) {
-    countdownTime = seconds;
-    isPaused = true;
-    localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
-    localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
-    updateDisplay();
+	countdownTime = seconds;
+	isPaused = true;
+	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
+	localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
+	updateDisplay();
 }
 
 function setCustomCountdown() {
-<<<<<<< HEAD
 	const customTime = parseInt(document.getElementById("customCountdown").value);
 	if (!isNaN(customTime) && customTime > 0) {
 		setCountdown(customTime);
 	} else {
-		Swal.fire({
-			icon: "error",
-			title: "Error",
-			text: "Please enter a valid number of seconds",
-		});
+		alert("Please enter a valid number of seconds");
 	}
-=======
-    const customTime = parseInt(document.getElementById("customCountdown").value);
-    if (!isNaN(customTime) && customTime > 0) {
-        setCountdown(customTime);
-    } else {
-        alert("Please enter a valid number of seconds");
-    }
->>>>>>> vista-contador
 }
 
 function startPauseTimer() {
-    const startPauseBtn = document.getElementById("startPauseBtn");
+	const startPauseBtn = document.getElementById("startPauseBtn");
 
-    if (isPaused) {
-        const currentTime = new Date().getTime();
+	if (isPaused) {
+		const currentTime = new Date().getTime();
 
-<<<<<<< HEAD
-		startTimer(); // Iniciar el temporizador actual
+		// Si estaba pausado, actualizar startTime restando el tiempo de pausa
+		if (pausedAt) {
+			const pauseDuration = currentTime - pausedAt;
+			localStorage.setItem(
+				`startTime_${currentSpaceId}`,
+				parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) +
+					pauseDuration
+			);
+		} else {
+			localStorage.setItem(`startTime_${currentSpaceId}`, currentTime);
+		}
+
+		pausedAt = null;
+		localStorage.removeItem(`pausedAt_${currentSpaceId}`);
+
+		startTimer();
 		startPauseBtn.textContent = "Pausar";
 		startPauseBtn.classList.remove("btn-primary", "btn-success");
 		startPauseBtn.classList.add("btn-warning");
 		isPaused = false;
 	} else {
-		// Al pausar, guardamos el tiempo actual
 		pausedAt = new Date().getTime();
 		localStorage.setItem(`pausedAt_${currentSpaceId}`, pausedAt);
 		pauseTimer();
@@ -147,234 +153,93 @@ function startPauseTimer() {
 		startPauseBtn.classList.add("btn-primary");
 		isPaused = true;
 	}
+
 	localStorage.setItem(`isPaused_${currentSpaceId}`, isPaused);
-	localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed); // Guardar el tiempo transcurrido
-	if (!isStopwatch) {
-		// Para countdown, guardar el tiempo restante exacto
-		const remainingTime =
-			countdownTime -
-			Math.floor(
-				(new Date().getTime() -
-					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
-					1000
-			);
-		localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
-	}
-=======
-        // Si estaba pausado, actualizar startTime restando el tiempo de pausa
-        if (pausedAt) {
-            const pauseDuration = currentTime - pausedAt;
-            localStorage.setItem(`startTime_${currentSpaceId}`, parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) + pauseDuration);
-        } else {
-            localStorage.setItem(`startTime_${currentSpaceId}`, currentTime);
-        }
-
-        pausedAt = null;
-        localStorage.removeItem(`pausedAt_${currentSpaceId}`);
-
-        startTimer();
-        startPauseBtn.textContent = "Pausar";
-        startPauseBtn.classList.remove("btn-primary", "btn-success");
-        startPauseBtn.classList.add("btn-warning");
-        isPaused = false;
-    } else {
-        pausedAt = new Date().getTime();
-        localStorage.setItem(`pausedAt_${currentSpaceId}`, pausedAt);
-        pauseTimer();
-        startPauseBtn.textContent = "Continuar";
-        startPauseBtn.classList.remove("btn-warning");
-        startPauseBtn.classList.add("btn-primary");
-        isPaused = true;
-    }
-
-    localStorage.setItem(`isPaused_${currentSpaceId}`, isPaused);
->>>>>>> vista-contador
 }
 
 function startTimer() {
-    if (timerInterval) clearInterval(timerInterval); // Evita múltiples intervalos
+	if (timerInterval) clearInterval(timerInterval); // Evita múltiples intervalos
 
-    localStorage.setItem("currentSpaceId", currentSpaceId);
+	localStorage.setItem("currentSpaceId", currentSpaceId);
 
-    timerInterval = setInterval(() => {
-        if (currentSpaceId === localStorage.getItem("currentSpaceId")) {
-            calculateAndDisplayTime();
-        }
-    }, 1000);
+	timerInterval = setInterval(() => {
+		if (currentSpaceId === localStorage.getItem("currentSpaceId")) {
+			calculateAndDisplayTime();
+		}
+	}, 1000);
 }
 
-<<<<<<< HEAD
-// Intervalo para enviar datos al servidor
-let syncInterval = setInterval(() => {
-	if (!isPaused && currentSpaceId) {
-		syncTimerData();
-	}
-}, 10000); // Sincronizar cada 10 segundos
-
-function syncTimerData() {
-	if (isStopwatch) return; // No sincronizar si es stopwatch
-	// Solo registrar si el countdown ha terminado
-	const tiempoEnSegundos =
-		countdownTime -
-		Math.floor(
-			(new Date().getTime() -
-				parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
-				1000
-		);
-
-	if (tiempoEnSegundos > 0) {
-		registrarAlquiler(currentSpaceId, tiempoEnSegundos)
-			.then((response) => {
-				console.log("Sincronización exitosa con la BD:", response);
-			})
-			.catch((error) => {
-				console.error("Error al sincronizar con la BD:", error);
-			});
-	}
-}
-
-// Pausa el temporizador
 function pauseTimer() {
 	clearInterval(timerInterval);
-	// Guardar el tiempo transcurrido en el momento de la pausa
-	if (isStopwatch) {
-		localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed);
-	} else {
-		// Para countdown, guardar el tiempo restante exacto
-		const remainingTime =
-			countdownTime -
-			Math.floor(
-				(new Date().getTime() -
-					parseInt(localStorage.getItem(`startTime_${currentSpaceId}`))) /
-					1000
-			);
-		localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
-	}
-=======
-function pauseTimer() {
-    clearInterval(timerInterval);
->>>>>>> vista-contador
 }
 
 function resetTimer() {
-<<<<<<< HEAD
-	clearInterval(timerInterval);
+	clearInterval(timerInterval); // Limpia cualquier intervalo existente
 	localStorage.removeItem(`startTime_${currentSpaceId}`);
 	localStorage.removeItem(`isPaused_${currentSpaceId}`);
 	localStorage.removeItem(`isStopwatch_${currentSpaceId}`);
-	localStorage.removeItem(`timeElapsed_${currentSpaceId}`);
 	localStorage.removeItem(`pausedAt_${currentSpaceId}`);
 	localStorage.removeItem(`countdownTime_${currentSpaceId}`);
-	localStorage.removeItem(`isSynced_${currentSpaceId}`); // Limpiar la bandera de sincronización
-=======
-    clearInterval(timerInterval); // Limpia cualquier intervalo existente
-    localStorage.removeItem(`startTime_${currentSpaceId}`);
-    localStorage.removeItem(`isPaused_${currentSpaceId}`);
-    localStorage.removeItem(`isStopwatch_${currentSpaceId}`);
-    localStorage.removeItem(`pausedAt_${currentSpaceId}`);
-    localStorage.removeItem(`countdownTime_${currentSpaceId}`);
->>>>>>> vista-contador
 
-    countdownTime = 0;
-    document.getElementById("timer-display").textContent = "00:00:00";
-    document.getElementById("startPauseBtn").textContent = "Empezar";
-    document.getElementById("startPauseBtn").classList.remove("btn-primary", "btn-warning");
-    document.getElementById("startPauseBtn").classList.add("btn-success");
-    isPaused = true;
-    pausedAt = null;
+	countdownTime = 0;
+	document.getElementById("timer-display").textContent = "00:00:00";
+	document.getElementById("startPauseBtn").textContent = "Empezar";
+	document
+		.getElementById("startPauseBtn")
+		.classList.remove("btn-primary", "btn-warning");
+	document.getElementById("startPauseBtn").classList.add("btn-success");
+	isPaused = true;
+	pausedAt = null;
 }
 
 function calculateAndDisplayTime() {
-    const startTime = parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) || 0;
-    const currentTime = new Date().getTime();
-    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-
-<<<<<<< HEAD
+	const startTime =
+		parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) || 0;
 	const currentTime = new Date().getTime();
-	let elapsedTime = Math.floor((currentTime - startTime) / 1000);
+	const elapsedTime = Math.floor((currentTime - startTime) / 1000);
 
 	if (isStopwatch) {
-		// Mostrar el tiempo transcurrido para el cronómetro
-		timeElapsed =
-			parseInt(localStorage.getItem(`timeElapsed_${currentSpaceId}`)) +
-			elapsedTime;
 		document.getElementById("timer-display").textContent =
-			formatTime(timeElapsed);
+			formatTime(elapsedTime);
 	} else {
-		// Mostrar el tiempo restante para la cuenta regresiva
 		let remainingTime = countdownTime - elapsedTime;
 		if (remainingTime <= 0) {
 			clearInterval(timerInterval);
 			document.getElementById("timer-display").textContent = "00:00:00";
-
-			// Registrar el tiempo solo si es mayor a cero
-			if (countdownTime > 0) {
-				registrarAlquiler(currentSpaceId, countdownTime) // Usar el tiempo total del countdown
-					.then(() => {
-						// Mostrar alerta y cerrar el modal automáticamente
-						Swal.fire({
-							icon: "info",
-							title: "Countdown finalizado",
-							text: "El tiempo del temporizador ha finalizado.",
-							confirmButtonText: "Aceptar",
-							timer: 2000, // Cerrar la alerta después de 2 segundos
-							timerProgressBar: true,
-						}).then(() => {
-							// Cerrar el modal si está abierto
-							$("#timerModal").modal("hide");
-						});
-					})
-					.catch((error) => {
-						console.error("Error al registrar el alquiler:", error);
-					});
-			}
-
+			alert("Countdown finished!");
 			resetTimer();
 		} else {
-			// Guardar el tiempo restante correctamente
-			localStorage.setItem(`countdownTime_${currentSpaceId}`, remainingTime);
-			timeElapsed = countdownTime - remainingTime; // Guardar el tiempo transcurrido correctamente
 			document.getElementById("timer-display").textContent =
 				formatTime(remainingTime);
 		}
 	}
 }
-// Actualiza el display al cargar
-=======
-    if (isStopwatch) {
-        document.getElementById("timer-display").textContent = formatTime(elapsedTime);
-    } else {
-        let remainingTime = countdownTime - elapsedTime;
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-            document.getElementById("timer-display").textContent = "00:00:00";
-            alert("Countdown finished!");
-            resetTimer();
-        } else {
-            document.getElementById("timer-display").textContent = formatTime(remainingTime);
-        }
-    }
-}
 
->>>>>>> vista-contador
 function updateDisplay() {
-    const startTime = parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) || 0;
-    const currentTime = new Date().getTime();
-    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+	const startTime =
+		parseInt(localStorage.getItem(`startTime_${currentSpaceId}`)) || 0;
+	const currentTime = new Date().getTime();
+	const elapsedTime = Math.floor((currentTime - startTime) / 1000);
 
-    if (isStopwatch) {
-        document.getElementById("timer-display").textContent = formatTime(elapsedTime);
-    } else {
-        const remainingTime = parseInt(localStorage.getItem(`countdownTime_${currentSpaceId}`)) || countdownTime;
-        document.getElementById("timer-display").textContent = formatTime(remainingTime);
-    }
+	if (isStopwatch) {
+		document.getElementById("timer-display").textContent =
+			formatTime(elapsedTime);
+	} else {
+		const remainingTime =
+			parseInt(localStorage.getItem(`countdownTime_${currentSpaceId}`)) ||
+			countdownTime;
+		document.getElementById("timer-display").textContent =
+			formatTime(remainingTime);
+	}
 }
 
 function formatTime(seconds) {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	const hrs = Math.floor(seconds / 3600);
+	const mins = Math.floor((seconds % 3600) / 60);
+	const secs = seconds % 60;
+	return `${hrs.toString().padStart(2, "0")}:${mins
+		.toString()
+		.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
 
 function terminarStopwatch() {

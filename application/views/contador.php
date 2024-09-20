@@ -4,22 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador</title>
-<<<<<<< HEAD
     <link rel="shortcut icon" href="<?php echo base_url('public/img/alarma-3d.png'); ?>" type="image/x-icon">
 
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-=======
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" /> 
->>>>>>> vista-contador
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<<<<<<< HEAD
-=======
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>">
-    <script src="<?php echo base_url('assets/js/timer-core.js'); ?>"></script>
->>>>>>> vista-contador
 
     <style>
         /* Botones personalizados */
@@ -126,37 +117,6 @@
         </div>
 
         <!-- Modal -->
-<<<<<<< HEAD
-  <!-- Modal -->
-<div class="modal fade" id="timerModal" tabindex="-1" aria-labelledby="timerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="timerModalLabel">Choose Timer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="initial-content">
-                    <img src="image.png" alt="Timer Image" />
-                    <p>Please select a timer option below to begin. You can either choose to start a Stopwatch or set a Countdown.</p>
-                    <div class="timer-options">
-                        <button onclick="showStopwatch()" class="btn btn-success">StopWatch</button>
-                        <button onclick="showCountdown()" class="btn btn-danger">CountDown</button>
-                    </div>
-                </div>
-
-                <div id="timer-controls">
-                    <h2 id="timer-type">StopWatch/CountDown</h2>
-                    <div id="timer-display">00:00:00</div>
-                    <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()">Empezar</button>
-                    <button class="btn btn-danger" onclick="resetTimer()">Reiniciar</button>
-                    <button class="btn btn-primary" onclick="terminarStopwatch()">Terminar</button> <!-- Nuevo botón -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-=======
         <div class="modal fade" id="timerModal" tabindex="-1" aria-labelledby="timerModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -203,17 +163,11 @@
                 </div>
             </div>
         </div>
->>>>>>> vista-contador
 
     </main>
 </div>
 
-<<<<<<< HEAD
-<!-- Vinculación del script -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Asegúrate de que jQuery esté cargado -->
-=======
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
->>>>>>> vista-contador
 <script>
     const baseURL = '<?php echo base_url(); ?>';
 </script>
