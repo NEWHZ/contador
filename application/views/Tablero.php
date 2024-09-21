@@ -82,9 +82,13 @@
 
         <div class="collapse navbar-collapse" id="navbarMenu">
             <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'alquiler' ? 'active' : ''; ?>" href="/contador/index.php/alquiler">Historial</a>
+            </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_page == 'tablero' ? 'active' : ''; ?>" href="<?php echo site_url('tablero'); ?>">Show Time</a>
                 </li>
@@ -122,11 +126,12 @@
         <?php foreach ($espacios as $espacio): ?>
             (function() {
                 const spaceId = '<?= $espacio['id'] ?>';
-                let alarmTriggered = false; // Bandera para controlar si ya se mostró la alarma
+
+                // Verificar si la alarma ya fue disparada para este espacio en localStorage
+                let alarmTriggered = localStorage.getItem(`alarmTriggered_${spaceId}`) === "true";
 
                 // Función que actualiza el display de tiempo para un espacio específico
                 function refreshDisplay() {
-                    // Recuperar la información almacenada en localStorage
                     const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
                     const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
                     const countdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
@@ -135,7 +140,6 @@
 
                     let displayTime = "00:00:00";
 
-                    // Si hay un startTime, calcular el tiempo transcurrido
                     if (startTime > 0) {
                         const currentTime = new Date().getTime();
                         let elapsedTime = Math.floor((currentTime - startTime) / 1000);
@@ -149,12 +153,14 @@
                             displayTime = formatTime(elapsedTime);
                         } else {
                             const remainingTime = countdownTime - elapsedTime;
-                            displayTime = formatTime(Math.max(remainingTime, 0)); // Evita que sea negativo
+                            displayTime = formatTime(Math.max(remainingTime, 0));
 
-                            // Si el tiempo restante es 0 y la alarma aún no se ha disparado
+                            // Si el tiempo restante es 0 o menor y la alarma aún no se ha disparado
                             if (remainingTime <= 0 && !alarmTriggered) {
                                 triggerAlarm(); // Mostrar la alarma
-                                alarmTriggered = true; // Prevenir que la alarma se dispare más de una vez
+                                // Guardar en localStorage que la alarma ya fue disparada solo después de que se dispara
+                                alarmTriggered = true; 
+                                localStorage.setItem(`alarmTriggered_${spaceId}`, "true");
                             }
                         }
                     }
@@ -164,7 +170,6 @@
                     document.getElementById(`timer-status-${spaceId}`).textContent = startTime > 0 ? (isPaused ? 'Pausado' : 'En curso') : 'Inactivo';
                 }
 
-                // Mostrar el tiempo inmediatamente cuando se carga la página
                 refreshDisplay();
 
                 // Inicia el intervalo para actualizar el display en tiempo real cada segundo
@@ -174,11 +179,9 @@
 
                 // Función para mostrar la alarma usando SweetAlert y reproducir sonido
                 function triggerAlarm() {
-                    // Reproducir sonido de alarma
                     const alarmSound = document.getElementById('alarm-sound');
                     alarmSound.play();
 
-                    // Mostrar alerta visual con SweetAlert2
                     Swal.fire({
                         title: '¡Tiempo terminado!',
                         text: 'El tiempo del espacio ha llegado a su fin.',
@@ -192,13 +195,15 @@
 
     // Función para formatear el tiempo en HH:MM:SS
     function formatTime(seconds) {
-        if (isNaN(seconds) || seconds < 0) return "00:00:00"; // Valor predeterminado si seconds es NaN o menor a 0
+        if (isNaN(seconds) || seconds < 0) return "00:00:00";
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 </script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
