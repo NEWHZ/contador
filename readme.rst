@@ -1,70 +1,79 @@
-###################
-What is CodeIgniter
-###################
+### Finalidad del proyecto
+Este proyecto es una aplicación web que permite a los usuarios utilizar un temporizador y 
+cronómetro interactivo con opciones de personalización. Los usuarios pueden ajustar el 
+tiempo de la cuenta regresiva, cambiar el color de fondo al finalizar y activar una alerta 
+sonora. La idea detrás del proyecto es crear una herramienta sencilla pero eficaz para tareas 
+de seguimiento de tiempo, que puede ser utilizada en múltiples contextos, como estudio, 
+trabajo o actividades físicas.
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
 
-*******************
-Release Information
-*******************
+### Requisitos
+Antes de comenzar, asegúrate de tener los siguientes requisitos instalados en tu sistema:
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+-Apache:
+Versión: Apache/2.4.52 (Ubuntu)
+Compilado: 2024-07-17T18:57:26
 
-**************************
-Changelog and New Features
-**************************
+-PHP:
+Versión: PHP 7.3.33-20+ubuntu22.04.1+deb.sury.org+1 (CLI)
+Compilado: Aug 2 2024 16:18:50
+Zend Engine: v3.3.33
+Zend OPcache: v7.3.33-20+ubuntu22.04.1+deb.sury.org+1
 
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
+-MySQL*
+Versión: 8.0.39-0ubuntu0.22.04.1
+Sistema operativo: Linux (Ubuntu)
 
-*******************
-Server Requirements
-*******************
+-codeigniter 3
 
-PHP version 5.6 or newer is recommended.
+### Instalación del proyecto: 
+--local
+Clonar el repositorio: Ejecuta el siguiente comando en tu terminal:
+git clone https://github.com/NEWHZ/contador
+Mover los archivos: Coloca los archivos clonados en el directorio de tu servidor local. Para XAMPP, deberías moverlos a la carpeta htdocs/. Para WAMP, dentro de www/.
+Acceder a la aplicación: Abre un navegador y accede a la siguiente URL: http://localhost/contador/index.php.
 
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
+Crear la base de datos, y asignar el archivo database.php en Application/config 
 
-************
-Installation
-************
+--Entorno de AWS/EC2
 
-Please see the `installation section <https://codeigniter.com/user_guide/installation/index.html>`_
-of the CodeIgniter User Guide.
+Crear una instancia, elegir sistema operativo(este proyecto se uso ubuntu de 64bits x86, el tipo de instancia es t2.micro, usar la llave .pem, se hilito el trafico htttp y https, se uso almacenamiento de 8gb y gp3 volumen de raiz, se lanza instancia.)
 
-*******
-License
-*******
+Hayy que conectarse por medio de ssh desde una terminal(ssh -i "(la llave .pem)" ubuntu@(se colocala el DNS de la instancia))
 
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+luego se instala las versiones de apache, php y mysql ya mencionados.
 
-*********
-Resources
-*********
+Se crea la base de datos
+moverse a /var/www/html
+se clona el proyecto: git clone https://github.com/NEWHZ/contador
 
--  `User Guide <https://codeigniter.com/docs>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community Slack Channel <https://codeigniterchat.slack.com>`_
+Asignar el archivo database.php en Application/config 
 
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
+Cambiar la url en Application/config/config.php y colocar la ip 
 
-***************
-Acknowledgement
-***************
+### Características de Código Abierto
+	Este proyecto es **de código abierto**, lo que significa que es libre para usar, modificar 	y distribuir. Cualquiera puede contribuir al desarrollo, mejorar las funcionalidades existentes o adaptar la aplicación según sus necesidades.
 
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+### Acceso al Código Fuente
+	El código fuente de este proyecto está disponible en 
+	[GitHub]https://github.com/NEWHZ/contador.git 
+
+### Licencia
+	Este proyecto está licenciado bajo la [Licencia MIT](LICENSE). Puedes consultar el 
+	archivo de licencia para más detalles.
+
+### Contribuciones
+Las contribuciones son bienvenidas. Si deseas contribuir, por favor sigue estos pasos:
+
+	Haz un fork del proyecto.
+	Crea una nueva rama (git checkout -b feature/nueva-funcionalidad).
+	Realiza tus cambios y haz commit (git commit -m 'Añadir nueva funcionalidad').
+	Haz push a la rama (git push origin feature/nueva-funcionalidad).
+	Abre un pull request.
+	
+	Contacto
+	Para cualquier consulta o sugerencia, puedes contactar a cualquiera de los desarrolladores:
+	crequenam@miumg.edu.gt
+	aterrazav2@gmiumg.edu.gt
+	nosoriom1@miumg.edu.gt
+	acastellanosr3@miumg.edu.gt
