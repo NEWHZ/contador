@@ -18,13 +18,109 @@
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/css/styles.contador.css'); ?>">
-    
+
+    <style>
+        /* Estilos de las cartas de espacios */
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-title {
+            font-weight: bold;
+        }
+
+        /* Estilos de los botones del temporizador */
+        .timer-options {
+            text-align: center;
+        }
+
+        .timer-options button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        #timer-controls {
+            text-align: center;
+            display: none;
+        }
+
+        #timer-display {
+            font-size: 32px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos personalizados para botones */
+        .btn-primary {
+            background-color: #003366;
+        }
+
+        .btn-primary:hover {
+            background-color: #002244;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Animación en el Placeholder del temporizador */
+        .timer-image-placeholder {
+            background: linear-gradient(135deg, #3282b8, #0f4c75);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 150px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .timer-image-placeholder img {
+            width: 80px;
+            height: 80px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .card img {
+                height: 150px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -85,7 +181,9 @@
                             </div>
                         </div>
                     <?php endforeach; ?>
-                </div>
+           
+</div>
+
             </div>
         </div>
 

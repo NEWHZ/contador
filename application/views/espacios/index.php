@@ -52,6 +52,21 @@
                 display: inline-block;
             }
         }
+        .color-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    margin: 5px;
+    border: 2px solid transparent;
+    transition: border 0.3s ease;
+}
+
+.color-circle.selected {
+    border: 2px solid black; /* Cambiar el borde para indicar la selección */
+}
+
 
         /* Ocultar el icono "Ver" en pantallas grandes */
         @media (min-width: 769px) {
@@ -230,9 +245,19 @@
                         <div id="imagenPreview"></div> <!-- Previsualización de la imagen -->
                     </div>
                     <div class="mb-3">
-                        <label for="color" class="form-label">Color de Fondo</label>
-                        <input type="color" class="form-control" id="color" name="color" value="#ffffff">
-                    </div>
+    <label for="color" class="form-label">Color de Fondo</label>
+    <div class="color-selector" id="colorPalette">
+        <div class="color-circle" style="background-color: #ff5733;" data-color="#FF5733"></div>
+        <div class="color-circle" style="background-color: #8e8e38;" data-color="#8E8E38"></div>
+        <div class="color-circle" style="background-color: #4caf50;" data-color="#4CAF50"></div>
+        <div class="color-circle" style="background-color: #008080;" data-color="#008080"></div>
+        <div class="color-circle" style="background-color: #1e90ff;" data-color="#1E90FF"></div>
+        <div class="color-circle" style="background-color: #6a0dad;" data-color="#6A0DAD"></div>
+        <div class="color-circle" style="background-color: #ff6347;" data-color="#FF6347"></div>
+    </div>
+    <input type="hidden" id="color" name="color" value="#ff5733">
+</div>
+
                     <input type="hidden" id="workspaceId" name="workspaceId">
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">Guardar</button>
