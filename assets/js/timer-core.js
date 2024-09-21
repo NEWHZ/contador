@@ -85,30 +85,16 @@ function showStopwatch() {
 
 // Muestra las opciones del countdown con presets
 function showCountdown() {
-	document.getElementById("initial-content").style.display = "none";
-	document.getElementById("timer-controls").style.display = "block";
-	document.getElementById("timer-type").textContent = "Countdown Active";
-	isStopwatch = false;
+	document.getElementById("initial-content").style.display = "none"; // Ocultar elección inicial
+	document.getElementById("timer-controls").style.display = "block"; // Mostrar controles
+	document.getElementById("timer-type").textContent = "Countdown Active"; // Mostrar que countdown está activo
+	isStopwatch = false; // Desactivar stopwatch
 
-	// Mostrar un formulario para ingresar tiempo o seleccionar un preset solo si no se ha mostrado antes
-	if (!document.getElementById("preset-container")) {
-		const presetContainer = document.createElement("div");
-		presetContainer.id = "preset-container"; // Añadimos un ID para verificar duplicados
-		presetContainer.innerHTML = `
-            <div>
-                <h5>Select a Preset</h5>
-                <button onclick="setCountdown(300)" class="btn btn-info">5 Minutes</button>
-                <button onclick="setCountdown(600)" class="btn btn-info">10 Minutes</button>
-                <button onclick="setCountdown(1800)" class="btn btn-info">30 Minutes</button>
-            </div>
-            <div class="mt-3">
-                <h5>Or Enter Custom Time (seconds)</h5>
-                <input type="number" id="customCountdown" class="form-control" placeholder="Enter time in seconds">
-                <button onclick="setCustomCountdown()" class="btn btn-primary mt-2">Set Countdown</button>
-            </div>
-        `;
-		document.getElementById("timer-controls").appendChild(presetContainer);
-	}
+	// Mostrar el selector de horas y minutos para Countdown
+	document.getElementById("countdown-settings").style.display = "block"; // Mostrar la selección de tiempo
+	document.getElementById("startPauseBtn").style.display = "none"; // Ocultar botón hasta que se seleccione tiempo
+	document.getElementById("resetBtn").style.display = "none"; // Ocultar reset
+	document.getElementById("terminateBtn").style.display = "none"; // Ocultar terminar
 }
 
 // Establecer un tiempo de cuenta regresiva de los presets
@@ -119,6 +105,35 @@ function setCountdown(seconds) {
 	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
 	localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
 	updateDisplay();
+}
+
+function setCustomTime() {
+	const hours = parseInt(document.getElementById("hours").value); // Obtener horas seleccionadas
+	const minutes = parseInt(document.getElementById("minutes").value); // Obtener minutos seleccionados
+
+	// Validar que se haya seleccionado un tiempo válido
+	if (hours === 0 && minutes === 0) {
+		Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: "Por favor selecciona un tiempo válido mayor que cero.",
+		});
+		return; // Si no se seleccionó un tiempo válido, detener la ejecución
+	}
+
+	// Convertir el tiempo a segundos
+	const totalSeconds = hours * 3600 + minutes * 60;
+
+	// Establecer el countdown
+	setCountdown(totalSeconds);
+
+	// Mostrar los botones de control una vez que se ha establecido el tiempo
+	document.getElementById("startPauseBtn").style.display = "inline-block";
+	document.getElementById("resetBtn").style.display = "inline-block";
+	document.getElementById("terminateBtn").style.display = "inline-block";
+
+	// Ocultar la selección de horas y minutos
+	document.getElementById("countdown-settings").style.display = "none";
 }
 
 // Establecer un tiempo de cuenta regresiva personalizado
@@ -180,6 +195,45 @@ function startTimer() {
 			calculateAndDisplayTime(); // Actualizar el tiempo
 		}
 	}, 1000);
+}
+
+// Restablecer el modal cuando se cierra
+$("#timerModal").on("hidden.bs.modal", function () {
+	resetModal(); // Llamar a la función para resetear el modal
+});
+
+// Función para resetear la interfaz del modal
+function resetModal() {
+	document.getElementById("initial-content").style.display = "block"; // Mostrar la elección de temporizador
+	document.getElementById("timer-controls").style.display = "none"; // Ocultar controles del temporizador
+	document.getElementById("countdown-settings").style.display = "none"; // Ocultar selección de tiempo
+	document.getElementById("timer-display").textContent = "00:00:00"; // Restablecer display de tiempo
+}
+
+// Función para reiniciar el temporizador
+function resetTimer() {
+	clearInterval(timerInterval); // Limpiar intervalos activos
+	localStorage.removeItem(`startTime_${currentSpaceId}`);
+	localStorage.removeItem(`isPaused_${currentSpaceId}`);
+	localStorage.removeItem(`isStopwatch_${currentSpaceId}`);
+	localStorage.removeItem(`timeElapsed_${currentSpaceId}`);
+	localStorage.removeItem(`pausedAt_${currentSpaceId}`);
+	localStorage.removeItem(`countdownTime_${currentSpaceId}`);
+
+	timeElapsed = 0;
+	countdownTime = 0;
+
+	document.getElementById("timer-display").textContent = "00:00:00";
+	document.getElementById("startPauseBtn").textContent = "Empezar";
+	document
+		.getElementById("startPauseBtn")
+		.classList.remove("btn-primary", "btn-warning");
+	document.getElementById("startPauseBtn").classList.add("btn-success");
+
+	isPaused = true;
+	pausedAt = null;
+
+	resetModal(); // Restablecer la interfaz del modal al reiniciar
 }
 
 // Intervalo para enviar datos al servidor
