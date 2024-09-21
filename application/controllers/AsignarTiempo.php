@@ -26,6 +26,6 @@ class AsignarTiempo extends CI_Controller {
         $data['espacios'] = $this->ModeloAsignarTiempo->getActiveEspacios();
 
         // Cargar la vista del tablero con los datos de los espacios
-        $this->load->view('tablero', $data);  // Cargar la vista del tablero
+        $this->load->view('Tablero', $data);  // Cargar la vista del tablero
     }
 }

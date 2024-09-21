@@ -72,12 +72,17 @@
                 <a class="nav-link <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'tablero' ? 'active' : ''; ?>" href="<?php echo site_url('tablero'); ?>">Show Time</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'asignarTiempo' ? 'active' : ''; ?>" href="<?php echo site_url('asignarTiempo'); ?>">Asignar Tiempo</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link <?php echo $current_page == 'categorias' ? 'active' : ''; ?>" href="<?php echo site_url('categorias'); ?>">Agregar Categoría</a>
             </li>
         </ul>
     </div>
 </header>
-
 <div class="container">
     <h2 class="text-center">Gestión de Categorías</h2>
 

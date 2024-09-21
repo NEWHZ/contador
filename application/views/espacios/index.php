@@ -101,6 +101,9 @@
                 <a class="nav-link <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'tablero' ? 'active' : ''; ?>" href="<?php echo site_url('tablero'); ?>">Show Time</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link <?php echo $current_page == 'asignarTiempo' ? 'active' : ''; ?>" href="<?php echo site_url('asignarTiempo'); ?>">Asignar Tiempo</a>
             </li>
             <li class="nav-item">
@@ -109,7 +112,6 @@
         </ul>
     </div>
 </header>
-
 <!-- Contenido del index -->
 <div class="container">
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>
