@@ -126,72 +126,73 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         <?php foreach ($espacios as $espacio): ?>
-            (function() {
-                const spaceId = '<?= $espacio['id'] ?>';
+        (function() {
+            const spaceId = '<?= $espacio['id'] ?>';
+            let alarmTriggered = localStorage.getItem(`alarmTriggered_${spaceId}`) === "true";
 
-                // Verificar si la alarma ya fue disparada para este espacio en localStorage
-                let alarmTriggered = localStorage.getItem(`alarmTriggered_${spaceId}`) === "true";
+            function refreshDisplay() {
+                const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
+                const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
+                const countdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
+                const isPaused = localStorage.getItem(`isPaused_${spaceId}`) === "true";
+                const pausedAt = parseInt(localStorage.getItem(`pausedAt_${spaceId}`)) || null;
+                let displayTime = "00:00:00";
 
-                // Función que actualiza el display de tiempo para un espacio específico
-                function refreshDisplay() {
-                    const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
-                    const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
-                    const countdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
-                    const isPaused = localStorage.getItem(`isPaused_${spaceId}`) === "true";
-                    const pausedAt = parseInt(localStorage.getItem(`pausedAt_${spaceId}`)) || null;
+                if (startTime > 0) {
+                    const currentTime = new Date().getTime();
+                    let elapsedTime = Math.floor((currentTime - startTime) / 1000);
 
-                    let displayTime = "00:00:00";
-
-                    if (startTime > 0) {
-                        const currentTime = new Date().getTime();
-                        let elapsedTime = Math.floor((currentTime - startTime) / 1000);
-
-                        // Si está en pausa, mostrar el tiempo al momento de la pausa
-                        if (isPaused && pausedAt) {
-                            elapsedTime = Math.floor((pausedAt - startTime) / 1000);
-                        }
-
-                        if (isStopwatch) {
-                            displayTime = formatTime(elapsedTime);
-                        } else {
-                            const remainingTime = countdownTime - elapsedTime;
-                            displayTime = formatTime(Math.max(remainingTime, 0));
-
-                            // Si el tiempo restante es 0 o menor y la alarma aún no se ha disparado
-                            if (remainingTime <= 0 && !alarmTriggered) {
-                                triggerAlarm(); // Mostrar la alarma
-                                // Guardar en localStorage que la alarma ya fue disparada solo después de que se dispara
-                                alarmTriggered = true; 
-                                localStorage.setItem(`alarmTriggered_${spaceId}`, "true");
-                            }
-                        }
+                    if (isPaused && pausedAt) {
+                        elapsedTime = Math.floor((pausedAt - startTime) / 1000);
                     }
 
-                    // Actualizar la visualización de tiempo en el tablero
-                    document.getElementById(`timer-display-${spaceId}`).textContent = displayTime;
-                    document.getElementById(`timer-status-${spaceId}`).textContent = startTime > 0 ? (isPaused ? 'Pausado' : 'En curso') : 'Inactivo';
+                    if (isStopwatch) {
+                        displayTime = formatTime(elapsedTime);
+                    } else {
+                        const remainingTime = countdownTime - elapsedTime;
+
+                        // Mostrar "00:00:00" cuando el tiempo llegue a cero
+                        displayTime = formatTime(Math.max(remainingTime, 0));
+
+                        // Disparar la alarma cuando el tiempo llega a 0
+                        if (remainingTime <= 0 && !alarmTriggered) {
+                            triggerAlarm();
+                            alarmTriggered = true; 
+                            localStorage.setItem(`alarmTriggered_${spaceId}`, "true");
+                        }
+                    }
                 }
 
+                // Actualizar el display del tiempo en el DOM
+                document.getElementById(`timer-display-${spaceId}`).textContent = displayTime;
+                document.getElementById(`timer-status-${spaceId}`).textContent = startTime > 0
+                    ? (isPaused ? 'Pausado' : 'En curso')
+                    : 'Inactivo';
+            }
+
+            refreshDisplay();
+
+            // Limpiar cualquier intervalo anterior antes de iniciar uno nuevo
+            let interval = setInterval(() => {
                 refreshDisplay();
+            }, 1000);
 
-                // Inicia el intervalo para actualizar el display en tiempo real cada segundo
-                setInterval(() => {
-                    refreshDisplay();
-                }, 1000);
+            // Función para mostrar la alarma usando SweetAlert y reproducir sonido
+            function triggerAlarm() {
+                const alarmSound = document.getElementById('alarm-sound');
+                alarmSound.play();
 
-                // Función para mostrar la alarma usando SweetAlert y reproducir sonido
-                function triggerAlarm() {
-                    const alarmSound = document.getElementById('alarm-sound');
-                    alarmSound.play();
+                Swal.fire({
+                    title: '¡Tiempo terminado!',
+                    text: 'El tiempo del espacio ha llegado a su fin.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                    backdrop: true, // Asegura que la alerta se muestre sobre el modal
+                });
 
-                    Swal.fire({
-                        title: '¡Tiempo terminado!',
-                        text: 'El tiempo del espacio ha llegado a su fin.',
-                        icon: 'warning',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
-            })();
+                clearInterval(interval); // Limpiar el intervalo una vez que se dispara la alarma
+            }
+        })();
         <?php endforeach; ?>
     });
 
@@ -204,6 +205,7 @@
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 </script>
+
 
 
 
