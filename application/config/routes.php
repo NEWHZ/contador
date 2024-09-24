@@ -60,3 +60,19 @@ $route['alquiler/registrarAlquiler'] = 'alquiler/registrarAlquiler';
 $route['alquiler/historial'] = 'alquiler/historial';
 $route['alquiler/filtrarHistorial'] = 'alquiler/filtrarHistorial';
 $route['tablero'] = 'AsignarTiempo/mostrarTablero';  // Esto llamará al método que maneja el tablero
+
+// Rutas de autenticación
+$route['auth/register'] = 'AuthController/register';
+$route['auth/process_register'] = 'AuthController/process_register';
+$route['auth/login'] = 'AuthController/login';
+$route['auth/process_login'] = 'AuthController/process_login';
+$route['auth/logout'] = 'AuthController/logout';
+
+// Rutas del panel de administración
+
+$route['usuarios'] = 'Usuarios/index';  // Lista de usuarios
+$route['usuarios/pendientes'] = 'Usuarios/pendientes';  // Usuarios pendientes
+$route['usuarios/aprobar/(:num)'] = 'Usuarios/aprobar/$1';  // Aprobar usuario
+$route['usuarios/edit/(:num)'] = 'Usuarios/edit/$1';  // Editar usuario
+$route['usuarios/update/(:num)'] = 'Usuarios/update/$1';  // Actualizar usuario
+$route['usuarios/delete/(:num)'] = 'Usuarios/delete/$1';  // Eliminar usuario
