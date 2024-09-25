@@ -85,7 +85,8 @@
     $current_page = end($uri_segments);
 ?>
 
-<?php $this->load->view('header'); ?>  <!-- Incluir el header -->
+<?php $this->load->view('header'); ?>
+  <!-- Incluir el header -->
 <!-- Contenido del index -->
 <div class="container">
     <h2 class="text-center">Tablero de Gestión de Espacios de Trabajo</h2>

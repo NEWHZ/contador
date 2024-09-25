@@ -6,6 +6,14 @@ class Espacios extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
+        if (!$this->session->userdata('logged_in')) {
+            // Si no ha iniciado sesión, redirigir al login
+            redirect('auth/login');
+        }
+        if ($this->session->userdata('role_id') != 1) { // 1 es para 'admin'
+            $this->session->set_flashdata('error', 'No tienes acceso a esta sección.');
+            redirect('asignarTiempo'); // Redirige a la página de usuario regular si no es admin
+        }
         $this->load->model('ModeloEspacio');
         $this->load->model('ModeloCategoria');
         $this->load->helper('url');

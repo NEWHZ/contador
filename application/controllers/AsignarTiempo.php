@@ -6,6 +6,11 @@ class AsignarTiempo extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
+        if (!$this->session->userdata('logged_in')) {
+            // Si no ha iniciado sesión, redirigir al login
+            redirect('auth/login');
+        }
+
         // Cargar el modelo que será utilizado para obtener los espacios activos
         $this->load->model('ModeloAsignarTiempo');
         $this->load->helper('url');

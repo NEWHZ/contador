@@ -12,31 +12,9 @@
             display: none;
         }
     </style>
-
-    <script>
-        // Mostrar alertas con SweetAlert2 basadas en los mensajes de la sesión
-        <?php if ($this->session->flashdata('success')): ?>
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: '<?= $this->session->flashdata('success') ?>',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        <?php endif; ?>
-
-        <?php if ($this->session->flashdata('error')): ?>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: '<?= $this->session->flashdata('error') ?>',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        <?php endif; ?>
-    </script>
 </head>
 <body>
+<?php $this->load->view('header'); ?>  <!-- Incluir el header -->
 
 <div class="container mt-4">
     <h2 class="text-center">Gestión de Usuarios</h2>
@@ -123,7 +101,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= site_url('usuarios/update') ?>" id="editUserForm" method="POST">
+                <form id="editUserForm" method="POST" action="<?= site_url('usuarios/update') ?>">
                     <input type="hidden" name="id" id="editUserId">
                     <div class="mb-3">
                         <label for="editUsername" class="form-label">Nombre de usuario</label>
@@ -148,6 +126,7 @@
 </div>
 
 <script>
+    // Confirmación de eliminación con SweetAlert2
     function confirmDelete(id) {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -164,15 +143,40 @@
         });
     }
 
+    // Abrir modal para editar usuario
     function openEditModal(id, username, email, role_id) {
         document.getElementById('editUserId').value = id;
         document.getElementById('editUsername').value = username;
         document.getElementById('editEmail').value = email;
         document.getElementById('editRole').value = role_id;
+
+        // Inicializar y mostrar el modal de edición
         var editModal = new bootstrap.Modal(document.getElementById('editModal'));
         editModal.show();
     }
+
+    // Función para alternar entre vistas
+    function toggleView(view) {
+        document.getElementById('allUsers').classList.add('hidden');
+        document.getElementById('pendingUsers').classList.add('hidden');
+        
+        if (view === 'allUsers') {
+            document.getElementById('allUsers').classList.remove('hidden');
+        } else if (view === 'pendingUsers') {
+            document.getElementById('pendingUsers').classList.remove('hidden');
+        }
+
+        // Cambiar la pestaña activa
+        document.querySelector('.nav-link.active').classList.remove('active');
+        if (view === 'allUsers') {
+            document.querySelector('.nav-link[href="#allUsers"]').classList.add('active');
+        } else if (view === 'pendingUsers') {
+            document.querySelector('.nav-link[href="#pendingUsers"]').classList.add('active');
+        }
+    }
 </script>
 
+<!-- Cargar los scripts de Bootstrap y dependencias al final -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

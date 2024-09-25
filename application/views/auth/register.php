@@ -39,6 +39,15 @@
         .input-group-text {
             cursor: pointer;
         }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+        }
+        #passwordStrength {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
     </style>
 
     <script>
@@ -58,32 +67,99 @@
             }
         }
 
-        // Validar la contraseña en el lado del cliente y confirmación de contraseñas
-        function validateForm() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const passwordErrorMessage = document.getElementById('passwordError');
-            const confirmPasswordErrorMessage = document.getElementById('confirmPasswordError');
+        // Función para verificar la fortaleza de la contraseña y mostrar comentarios en tiempo real
+        function checkPasswordStrength(password) {
+            var strength = 0;
+            var tips = "";
 
-            // Patrón de validación para asegurar una contraseña segura
-            const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-
-            if (!regex.test(password)) {
-                passwordErrorMessage.style.display = 'block';
-                passwordErrorMessage.textContent = 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número.';
-                return false;
+            if (password.length < 8) {
+                tips += "Debe tener al menos 8 caracteres. ";
+            } else {
+                strength += 1;
             }
 
-            if (password !== confirmPassword) {
-                confirmPasswordErrorMessage.style.display = 'block';
-                confirmPasswordErrorMessage.textContent = 'Las contraseñas no coinciden.';
-                return false;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+                strength += 1;
+            } else {
+                tips += "Use letras mayúsculas y minúsculas. ";
             }
 
-            // Ocultar mensajes de error si todo es válido
-            passwordErrorMessage.style.display = 'none';
-            confirmPasswordErrorMessage.style.display = 'none';
-            return true;
+            if (password.match(/\d/)) {
+                strength += 1;
+            } else {
+                tips += "Incluya al menos un número. ";
+            }
+
+            if (password.match(/[^a-zA-Z\d]/)) {
+                strength += 1;
+            } else {
+                tips += "Incluya al menos un carácter especial. ";
+            }
+
+            var strengthElement = document.getElementById("passwordStrength");
+
+            if (strength < 2) {
+                strengthElement.textContent = "Fácil de adivinar. " + tips;
+                strengthElement.style.color = "red";
+                strengthElement.style.display = "block";
+            } else if (strength === 2) {
+                strengthElement.textContent = "Dificultad media. " + tips;
+                strengthElement.style.color = "orange";
+                strengthElement.style.display = "block";
+            } else if (strength === 3) {
+                strengthElement.textContent = "Difícil. " + tips;
+                strengthElement.style.color = "black";
+                strengthElement.style.display = "block";
+            } else {
+                strengthElement.textContent = "Extremadamente difícil. " + tips;
+                strengthElement.style.color = "green";
+                strengthElement.style.display = "block";
+            }
+        }
+
+        // Validar el formulario antes de enviar
+        function checkForm(event, form) {
+            event.preventDefault();  // Detener el envío del formulario
+
+            let valid = true;
+            let password1 = form.pwd1.value;
+            let password2 = form.pwd2.value;
+            let username = form.username.value;
+
+            document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('confirmPasswordError').style.display = 'none';
+            document.getElementById('usernameError').style.display = 'none';
+
+            if (username == "") {
+                document.getElementById('usernameError').textContent = 'Debe escribir un nombre de usuario.';
+                document.getElementById('usernameError').style.display = 'block';
+                valid = false;
+            }
+
+            var re = /^\w+$/;
+            if (!re.test(username)) {
+                document.getElementById('usernameError').textContent = 'El nombre de usuario solo debe contener letras, números y guiones bajos.';
+                document.getElementById('usernameError').style.display = 'block';
+                valid = false;
+            }
+
+            if (password1 !== password2) {
+                document.getElementById('confirmPasswordError').textContent = 'Las contraseñas no coinciden.';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                valid = false;
+            }
+
+            if (valid) {
+                // Mostrar la alerta de registro exitoso y luego enviar el formulario
+                Swal.fire({
+                    title: 'Registro Exitoso',
+                    text: 'El formulario ha sido enviado correctamente.',
+                    icon: 'success',
+                    showConfirmButton: true,
+                }).then(() => {
+                    form.submit();  // Enviar el formulario manualmente después de mostrar la alerta
+                });
+            }
         }
     </script>
 </head>
@@ -92,34 +168,13 @@
     <div class="registration-container">
         <h2>Registro</h2>
 
-        <!-- Mostrar mensajes con SweetAlert2 -->
-        <script>
-            <?php if ($this->session->flashdata('error')): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: '<?php echo $this->session->flashdata('error'); ?>',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            <?php endif; ?>
-
-            <?php if ($this->session->flashdata('success')): ?>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro Exitoso',
-                    text: '<?php echo $this->session->flashdata('success'); ?>',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            <?php endif; ?>
-        </script>
-
         <!-- Formulario de registro -->
-        <?php echo form_open('auth/process_register', array('onsubmit' => 'return validateForm();')); ?>
+        <?php echo form_open('auth/process_register', array('method' => 'POST', 'onsubmit' => 'checkForm(event, this);')); ?>
+
             <div class="mb-3">
                 <label for="username" class="form-label">Nombre de usuario</label>
                 <input type="text" class="form-control" id="username" name="username" required>
+                <div id="usernameError" class="error-message">Debe escribir un nombre de usuario.</div>
             </div>
 
             <div class="mb-3">
@@ -131,24 +186,25 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="pwd1" oninput="checkPasswordStrength(this.value)" required>
                     <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')">
                         <i class="fas fa-eye" id="togglePasswordIcon"></i>
                     </span>
                 </div>
-                <div id="passwordError" style="color: red; display: none;"></div> <!-- Mensaje de error para contraseña -->
+                <div id="passwordStrength" class="error-message"></div> <!-- Mensaje de fortaleza de la contraseña -->
+                <div id="passwordError" class="error-message"></div> <!-- Mensaje de error para contraseña -->
             </div>
 
             <!-- Confirmación de contraseña con ícono dentro del campo -->
             <div class="mb-3">
                 <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    <input type="password" class="form-control" id="confirm_password" name="pwd2" required>
                     <span class="input-group-text" onclick="togglePassword('confirm_password', 'toggleConfirmPasswordIcon')">
                         <i class="fas fa-eye" id="toggleConfirmPasswordIcon"></i>
                     </span>
                 </div>
-                <div id="confirmPasswordError" style="color: red; display: none;"></div> <!-- Mensaje de error para confirmación de contraseña -->
+                <div id="confirmPasswordError" class="error-message"></div> <!-- Mensaje de error para confirmación de contraseña -->
             </div>
 
             <button type="submit" class="btn btn-primary">Registrarse</button>

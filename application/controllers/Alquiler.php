@@ -5,6 +5,15 @@ class Alquiler extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth/login'); // Redirige al login si no está autenticado
+        }
+    
+        // Verifica si el usuario tiene el rol adecuado (ejemplo: 'admin')
+        if ($this->session->userdata('role_id') != 1) { // 1 es para 'admin'
+            $this->session->set_flashdata('error', 'No tienes acceso a esta sección.');
+            redirect('asignarTiempo'); // Redirige a la página de usuario regular si no es admin
+        }
         $this->load->model('Alquiler_model'); // Cargar el modelo de alquiler
         $this->load->helper('url');
         $this->load->library('session');

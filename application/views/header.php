@@ -14,14 +14,7 @@
     <div class="collapse navbar-collapse" id="navbarMenu">
         <ul class="navbar-nav ms-auto">
             <!-- Enlace al historial de alquiler -->
-            <li class="nav-item">
-                <a class="nav-link <?php echo $current_page == 'alquiler' ? 'active' : ''; ?>" href="/contador/index.php/alquiler">Historial</a>
-            </li>
-
-            <!-- Enlace a los dispositivos (espacios) -->
-            <li class="nav-item">
-                <a class="nav-link <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a>
-            </li>
+        
 
             <!-- Enlace a "Show Time" -->
             <li class="nav-item">
@@ -32,14 +25,22 @@
             <li class="nav-item">
                 <a class="nav-link <?php echo $current_page == 'asignarTiempo' ? 'active' : ''; ?>" href="<?php echo site_url('asignarTiempo'); ?>">Asignar Tiempo</a>
             </li>
+            <?php if ($this->session->userdata('role_id') == 1): ?>
+                <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'alquiler' ? 'active' : ''; ?>" href="/contador/index.php/alquiler">Historial</a>
+            </li>
 
+            <!-- Enlace a los dispositivos (espacios) -->
+            <li class="nav-item">
+                <a class="nav-link <?php echo $current_page == 'espacios' ? 'active' : ''; ?>" href="/contador/index.php/espacios">Dispositivos</a>
+            </li>
             <!-- Enlace para "Agregar Categoría" -->
             <li class="nav-item">
                 <a class="nav-link <?php echo $current_page == 'categorias' ? 'active' : ''; ?>" href="<?php echo site_url('categorias'); ?>">Agregar Categoría</a>
             </li>
 
             <!-- Mostrar enlace de "Gestión de Usuarios" solo para administradores -->
-            <?php if ($this->session->userdata('role_id') == 1): ?>
+           
             <li class="nav-item">
                 <a class="nav-link <?php echo $current_page == 'usuarios' ? 'active' : ''; ?>" href="<?php echo site_url('usuarios'); ?>">Gestión de Usuarios</a>
             </li>
