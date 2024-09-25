@@ -6,26 +6,27 @@ class AsignarTiempo extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        // Cargar el modelo que será utilizado para obtener los espacios activos
         $this->load->model('ModeloAsignarTiempo');
         $this->load->helper('url');
     }
 
     public function index()
     {
-        // Obtener los espacios activos y sus tiempos
+        // Obtener los espacios activos y sus categorías
         $data['espacios'] = $this->ModeloAsignarTiempo->getActiveEspacios();
+        $data['categorias'] = $this->ModeloAsignarTiempo->getCategorias();  // Añadir las categorías a los datos
 
-        // Cargar la vista con los datos de los espacios
-        $this->load->view('contador', $data);  // La vista del contador que incluye el cronómetro
+        // Cargar la vista con los datos de los espacios y las categorías
+        $this->load->view('contador', $data);
     }
 
     public function mostrarTablero()
     {
-        // También obtén los datos de los espacios en la vista del tablero si es necesario
+        // Obtener los espacios activos y las categorías para la vista Tablero
         $data['espacios'] = $this->ModeloAsignarTiempo->getActiveEspacios();
+        $data['categorias'] = $this->ModeloAsignarTiempo->getCategorias();  // Asegurarse de obtener también las categorías
 
-        // Cargar la vista del tablero con los datos de los espacios
-        $this->load->view('Tablero', $data);  // Cargar la vista del tablero
+        // Cargar la vista del Tablero con los datos de los espacios y las categorías
+        $this->load->view('Tablero', $data);
     }
 }

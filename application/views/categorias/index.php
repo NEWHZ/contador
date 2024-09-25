@@ -117,6 +117,7 @@
                     <th>#</th>
                     <th>Nombre</th>
                     <th>Precio</th>
+                    <th>Tiempo Limite</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -125,7 +126,10 @@
                     <tr>
                         <td><?= $categoria['id'] ?></td>
                         <td><?= $categoria['nombre'] ?></td>
-                        <td><?= $categoria['precio'] ?></td>
+                        <td>Q<?= number_format($categoria['precio'], 2) ?></td>
+                <td>
+                    <?= isset($categoria['tiempo_limite']) ? $categoria['tiempo_limite'] : 'No definido' ?> horas
+                </td>
                         <td>
                             <!-- Iconos de acciones -->
                             <i class="fas fa-edit text-warning" title="Editar" onclick="editCategoria(<?= $categoria['id'] ?>)"></i>
@@ -143,29 +147,33 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="categoriaModalLabel">Añadir Categoría</h5>
+                <h5 class="modal-title" id="categoriaModalLabel">Añadir/Editar Categoría</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="categoriaForm" method="POST">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre de la Categoría</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="precio" class="form-label">Precio</label>
-                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
-                    </div>
-                    <input type="hidden" id="categoriaId" name="categoriaId">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
+                        <form id="categoriaForm" method="POST">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre de la Categoría</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tiempo_limite" class="form-label">Tiempo Límite (en horas)</label>
+                            <input type="number" class="form-control" id="tiempo_limite" name="tiempo_limite" step="0.01" required>
+                        </div>
+                        <input type="hidden" id="categoriaId" name="categoriaId">
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+
             </div>
         </div>
     </div>
 </div>
-
 <!-- Pasar la URL base a JavaScript de manera segura -->
 <script>
     const BASE_URL = '<?= base_url(); ?>';

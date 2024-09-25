@@ -43,4 +43,12 @@ class ModeloCategoria extends CI_Model
         $this->db->where('id', $id);
         return $this->db->update($this->table, ['borrado_logico' => 1]);
     }
+
+    // Obtener todas las categorías con su límite de tiempo
+    public function getCategorias()
+    {
+        $this->db->select('id, nombre, precio, tiempo_limite');  // Asegúrate de incluir 'tiempo_limite'
+        $query = $this->db->get('categorias');
+        return $query->result_array();
+    }
 }

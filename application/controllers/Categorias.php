@@ -24,6 +24,7 @@ class Categorias extends CI_Controller {
     {
         $this->form_validation->set_rules('nombre', 'Nombre', 'required');
         $this->form_validation->set_rules('precio', 'Precio', 'required|numeric');
+        $this->form_validation->set_rules('tiempo_limite', 'Tiempo Límite', 'required|numeric');
 
         if ($this->form_validation->run() == FALSE) {
             $this->session->set_flashdata('error', validation_errors());
@@ -31,6 +32,7 @@ class Categorias extends CI_Controller {
             $data = [
                 'nombre' => $this->input->post('nombre'),
                 'precio' => $this->input->post('precio'),
+                'tiempo_limite' => $this->input->post('tiempo_limite'), // Capturar el valor del tiempo límite
                 'borrado_logico' => 0 // Asegurarse de que la categoría no esté eliminada lógicamente
             ];
 
@@ -61,13 +63,15 @@ class Categorias extends CI_Controller {
     {
         $this->form_validation->set_rules('nombre', 'Nombre', 'required');
         $this->form_validation->set_rules('precio', 'Precio', 'required|numeric');
+        $this->form_validation->set_rules('tiempo_limite', 'Tiempo Límite', 'required|numeric');
 
         if ($this->form_validation->run() == FALSE) {
             $this->session->set_flashdata('error', validation_errors());
         } else {
             $data = [
                 'nombre' => $this->input->post('nombre'),
-                'precio' => $this->input->post('precio')
+                'precio' => $this->input->post('precio'),
+                'tiempo_limite' => $this->input->post('tiempo_limite') // Capturar el valor del tiempo límite
             ];
 
             if ($this->ModeloCategoria->updateCategoria($id, $data)) {

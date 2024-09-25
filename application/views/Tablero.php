@@ -103,13 +103,32 @@
     
     <main class="container-fluid flex-grow-1 py-4">
         <h1 class="mb-4 text-center">Tablero de Tiempos</h1>
+
+            <!-- Filtro por categorías -->
+            <div class="mb-4 text-center">
+            <label for="filtroCategoria">Filtrar por categoría:</label>
+            <select id="filtroCategoria" class="form-select" onchange="filtrarPorCategoria()">
+                <option value="todas">Todas las categorías</option>
+                <!-- Mostrar las categorías en minúsculas para que coincidan con data-categoria -->
+                <?php foreach ($categorias as $categoria): ?>
+                    <option value="<?= strtolower($categoria['nombre']) ?>"><?= $categoria['nombre'] ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        
+            
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="spaces-container">
             <?php foreach ($espacios as $espacio): ?>
-                <div class="col">
+                <!-- Asegurarse de que las tarjetas tengan un valor correcto de data-categoria -->
+                <div class="col espacio-card" data-categoria="<?= strtolower($espacio['categoria']) ?>">
                     <div class="card h-100" style="background-color: <?= $espacio['color_fondo'] ?>;">
                         <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
+                            <p class="card-text flex-grow-1"><?= $espacio['descripcion'] ?></p>
+                            <!-- Mostrar la categoría aquí -->
+                            <p class="card-text"><strong>Categoría:</strong> <?= $espacio['categoria'] ?></p>
                             <p class="card-text timer-display" id="timer-display-<?= $espacio['id'] ?>">Cargando...</p>
                             <p class="text-muted" id="timer-status-<?= $espacio['id'] ?>">Cargando...</p>
                         </div>
@@ -124,6 +143,21 @@
 <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
 <script>
+ // Función para filtrar por categoría
+ function filtrarPorCategoria() {
+        var filtro = document.getElementById('filtroCategoria').value.toLowerCase();
+        var espacios = document.getElementsByClassName('espacio-card');
+
+        for (var i = 0; i < espacios.length; i++) {
+            var categoria = espacios[i].getAttribute('data-categoria').toLowerCase();
+            if (filtro === 'todas' || categoria === filtro) {
+                espacios[i].style.display = 'block';
+            } else {
+                espacios[i].style.display = 'none';
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         <?php foreach ($espacios as $espacio): ?>
             (function() {
@@ -204,8 +238,6 @@
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 </script>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

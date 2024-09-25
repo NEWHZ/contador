@@ -20,10 +20,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.css'); ?>">
-<link rel="stylesheet" href="<?php echo base_url('assets/css/styles.contador.css'); ?>">
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/styles.contador.css'); ?>">
     
 </head>
 
@@ -69,17 +68,30 @@
             <div class="col-md-10 col-lg-8">
                 <h1 class="mb-4 text-center">Asignar tiempo</h1>
 
+                <!-- Filtro por categorías -->
+                <div class="mb-4 text-center">
+                    <label for="filtroCategoria">Filtrar por categoría:</label>
+                    <select id="filtroCategoria" class="form-select" onchange="filtrarPorCategoria()">
+                        <option value="todas">Todas las categorías</option>
+                        <!-- Mostrar las categorías en minúsculas para que coincidan con data-categoria -->
+                        <?php foreach ($categorias as $categoria): ?>
+                            <option value="<?= strtolower($categoria['nombre']) ?>"><?= $categoria['nombre'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <!-- Fichas con grid -->
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listaEspacios">
                     <!-- Mostrar los espacios activos -->
                     <?php foreach ($espacios as $espacio): ?>
-                        <div class="col">
+                        <!-- Aquí aseguramos que el data-categoria tenga el valor correspondiente a la categoría del espacio -->
+                        <div class="col espacio-card" data-categoria="<?= strtolower($espacio['categoria']) ?>">
                             <div class="card h-100" style="background-color: <?= $espacio['color_fondo'] ?>;">
                                 <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
                                     <p class="card-text flex-grow-1"><?= $espacio['descripcion'] ?></p>
-                                    <!-- Botón para abrir el modal -->
+                                    <p class="card-text"><strong>Categoría:</strong> <?= $espacio['categoria'] ?></p>
                                     <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>')">Asignar tiempo</button>
                                 </div>
                             </div>
@@ -98,25 +110,17 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
-
                         <!-- Imagen o Placeholder con fondo decorativo -->
                         <div id="initial-content">
                             <div class="timer-image-placeholder">
                                 <img src="https://cdn-icons-png.flaticon.com/512/1892/1892001.png" alt="Timer Icon" />
                             </div>
-                            
-                            <p class="px-3">
-                            Por favor selecciona una opción de temporizador a continuación para comenzar. Puedes elegir iniciar un cronómetro o establecer una cuenta regresiva.
-                            </p>
+                            <p class="px-3">Por favor selecciona una opción de temporizador a continuación para comenzar. Puedes elegir iniciar un cronómetro o establecer una cuenta regresiva.</p>
 
                             <!-- Botones alineados con espaciado -->
                             <div class="timer-options d-flex justify-content-center gap-3">
-                                <button onclick="showStopwatch()" class="btn btn-success">
-                                    StopWatch
-                                </button>
-                                <button onclick="showCountdown()" class="btn btn-danger">
-                                    CountDown
-                                </button>
+                                <button onclick="showStopwatch()" class="btn btn-success">StopWatch</button>
+                                <button onclick="showCountdown()" class="btn btn-danger">CountDown</button>
                             </div>
                         </div>
 
@@ -163,6 +167,25 @@
 
     </main>
 </div>
+
+<script>
+// Función para filtrar por categoría
+function filtrarPorCategoria() {
+    var filtro = document.getElementById('filtroCategoria').value.toLowerCase();
+    var espacios = document.getElementsByClassName('espacio-card');
+
+    for (var i = 0; i < espacios.length; i++) {
+        var categoria = espacios[i].getAttribute('data-categoria').toLowerCase();
+
+        // Mostrar u ocultar las tarjetas según la categoría seleccionada
+        if (filtro === 'todas' || categoria === filtro) {
+            espacios[i].style.display = 'block';
+        } else {
+            espacios[i].style.display = 'none';
+        }
+    }
+}
+</script>
 
 <!-- Cargar jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 

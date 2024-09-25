@@ -22,24 +22,22 @@ class Alquiler_model extends CI_Model {
         return 0;
     }
 
-    // Guardar el registro del alquiler en historial_alquiler
-    public function guardarAlquiler($data) {
-        // Log para verificar los datos que se intentan guardar
+     // Guardar el registro del alquiler en historial_alquiler
+     public function guardarAlquiler($data) {
         log_message('info', 'Intentando guardar los datos: ' . json_encode($data));
-        
         return $this->db->insert('historial_alquiler', $data);
     }
     
-
-    // Obtener el historial de alquileres con información del espacio
-    public function getHistorialAlquiler() {
-        $this->db->select('historial_alquiler.*, espacios_trabajo.nombre as nombre_espacio');
-        $this->db->from('historial_alquiler');
-        $this->db->join('espacios_trabajo', 'historial_alquiler.espacio_id = espacios_trabajo.id');
-        $this->db->order_by('fecha_alquiler', 'DESC'); // Ordenar por fecha de alquiler descendente
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+  // Obtener el historial de alquileres con información del espacio y la categoría
+  public function getHistorialAlquiler() {
+    $this->db->select('historial_alquiler.*, espacios_trabajo.nombre as nombre_espacio, categorias.nombre as nombre_categoria');
+    $this->db->from('historial_alquiler');
+    $this->db->join('espacios_trabajo', 'historial_alquiler.espacio_id = espacios_trabajo.id');
+    $this->db->join('categorias', 'espacios_trabajo.categoria_id = categorias.id', 'left'); // LEFT JOIN para mostrar espacios sin categoría
+    $this->db->order_by('fecha_alquiler', 'DESC'); // Ordenar por fecha de alquiler descendente
+    $query = $this->db->get();
+    return $query->result_array();
+}
 
     // Opcional: Agregar un método para filtrar registros, por ejemplo, por espacio de trabajo o fecha
     public function filtrarHistorial($filters) {
