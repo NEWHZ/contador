@@ -27,7 +27,7 @@
 </head>
 
 <body>
-<div class="d-flex flex-column min-vh-100">
+<div class="d-flex flex-column min-vh-100" id="mainContainer">
 <?php
     // Obtener la URI actual para determinar qué enlace está activo
     $uri_segments = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -82,21 +82,23 @@
 
                 <!-- Fichas con grid -->
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="listaEspacios">
-                    <!-- Mostrar los espacios activos -->
+                   <!-- Mostrar los espacios activos -->
                     <?php foreach ($espacios as $espacio): ?>
-                        <!-- Aquí aseguramos que el data-categoria tenga el valor correspondiente a la categoría del espacio -->
-                        <div class="col espacio-card" data-categoria="<?= strtolower($espacio['categoria']) ?>">
+                        <!-- Aquí aseguramos que el data-categoria y data-tiempo_limite tengan los valores correctos -->
+                        <div class="col espacio-card" data-categoria="<?= strtolower($espacio['categoria']) ?>" data-tiempo_limite="<?= $espacio['tiempo_limite'] ?>">
                             <div class="card h-100" style="background-color: <?= $espacio['color_fondo'] ?>;">
                                 <img src="data:image/jpeg;base64,<?= base64_encode($espacio['imagen']) ?>" class="card-img-top" alt="<?= $espacio['nombre'] ?>" />
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= $espacio['nombre'] ?></h5>
                                     <p class="card-text flex-grow-1"><?= $espacio['descripcion'] ?></p>
                                     <p class="card-text"><strong>Categoría:</strong> <?= $espacio['categoria'] ?></p>
-                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>')">Asignar tiempo</button>
+                                    <p class="card-text"><strong>Tiempo límite:</strong> <?= $espacio['tiempo_limite'] ?> horas</p> <!-- Mostrar el límite de tiempo -->
+                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#timerModal" onclick="openTimerModal('<?= $espacio['id'] ?>', '<?= $espacio['tiempo_limite'] ?>')">Asignar tiempo</button>
                                 </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
+
                 </div>
             </div>
         </div>
@@ -134,6 +136,8 @@
                                 <button class="btn btn-success" id="startPauseBtn" onclick="startPauseTimer()">Empezar</button>
                                 <button class="btn btn-danger" onclick="resetTimer()">Reiniciar</button>
                                 <button class="btn btn-primary" onclick="terminarStopwatch()">Terminar</button>
+                                <button class="btn btn-secondary mt-2" onclick="returnToSelection()">Regresar</button>
+
                             </div>
                         </div>
 
@@ -159,6 +163,9 @@
                                 </div>
                             </div>
                             <button onclick="setCustomTime()" class="btn btn-primary mt-2">Establecer Countdown</button>
+                            <!-- Botón de regresar dentro de Countdown -->
+                        <button class="btn btn-secondary mt-2" onclick="returnToSelection()">Regresar</button>
+
                         </div>
                     </div>
                 </div>
@@ -168,24 +175,51 @@
     </main>
 </div>
 
-<script>
-// Función para filtrar por categoría
+<<script>
+// Función para filtrar por categoría y cambiar el fondo
 function filtrarPorCategoria() {
     var filtro = document.getElementById('filtroCategoria').value.toLowerCase();
     var espacios = document.getElementsByClassName('espacio-card');
+    var mainContainer = document.getElementById('mainContainer'); // Seleccionar el contenedor principal
+    var colorAsignado = false; // Variable para asignar el color solo una vez
 
+    // Recorrer los espacios para mostrar/ocultar y cambiar el fondo
     for (var i = 0; i < espacios.length; i++) {
         var categoria = espacios[i].getAttribute('data-categoria').toLowerCase();
+        var cardColor = window.getComputedStyle(espacios[i].querySelector('.card')).backgroundColor;
 
         // Mostrar u ocultar las tarjetas según la categoría seleccionada
         if (filtro === 'todas' || categoria === filtro) {
             espacios[i].style.display = 'block';
+
+            // Si es la primera tarjeta que coincide y aún no se ha asignado un color, usar su color para el fondo
+            if (!colorAsignado && filtro !== 'todas') {
+                mainContainer.style.backgroundColor = lightenColor(cardColor, 40); // Cambiar a un color más claro
+                colorAsignado = true; // Marcar que ya se ha asignado el color
+            }
         } else {
             espacios[i].style.display = 'none';
         }
     }
+
+    // Si no hay tarjetas visibles, volver al color por defecto
+    if (!colorAsignado) {
+        mainContainer.style.backgroundColor = '#fff'; // O el color de fondo que prefieras
+    }
+}
+
+// Función para aclarar un color
+function lightenColor(color, percent) {
+    var rgbValues = color.match(/\d+/g).map(Number); // Extraer valores RGB
+
+    var r = Math.min(255, Math.round(rgbValues[0] + (255 - rgbValues[0]) * percent / 100));
+    var g = Math.min(255, Math.round(rgbValues[1] + (255 - rgbValues[1]) * percent / 100));
+    var b = Math.min(255, Math.round(rgbValues[2] + (255 - rgbValues[2]) * percent / 100));
+
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
 }
 </script>
+
 
 <!-- Cargar jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 

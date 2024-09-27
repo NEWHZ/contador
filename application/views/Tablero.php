@@ -65,7 +65,7 @@
     </style>
 </head>
 <body>
-<div class="d-flex flex-column min-vh-100">
+<div class="d-flex flex-column min-vh-100" id="mainContainer">
 <?php
     // Obtener la URI actual para determinar qué enlace está activo
     $uri_segments = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -116,8 +116,6 @@
             </select>
         </div>
 
-        
-            
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="spaces-container">
             <?php foreach ($espacios as $espacio): ?>
                 <!-- Asegurarse de que las tarjetas tengan un valor correcto de data-categoria -->
@@ -139,104 +137,122 @@
     </main>
 </div>
 
-<!-- Agregar un archivo de sonido de alarma -->
 <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
 <script>
- // Función para filtrar por categoría
- function filtrarPorCategoria() {
-        var filtro = document.getElementById('filtroCategoria').value.toLowerCase();
-        var espacios = document.getElementsByClassName('espacio-card');
+// Función para filtrar por categoría y cambiar el fondo
+function filtrarPorCategoria() {
+    var filtro = document.getElementById('filtroCategoria').value.toLowerCase();
+    var espacios = document.getElementsByClassName('espacio-card');
+    var mainContainer = document.getElementById('mainContainer'); // Seleccionar el contenedor principal
+    var colorAsignado = false; // Variable para asignar el color solo una vez
 
-        for (var i = 0; i < espacios.length; i++) {
-            var categoria = espacios[i].getAttribute('data-categoria').toLowerCase();
-            if (filtro === 'todas' || categoria === filtro) {
-                espacios[i].style.display = 'block';
-            } else {
-                espacios[i].style.display = 'none';
+    // Recorrer los espacios para mostrar/ocultar y cambiar el fondo
+    for (var i = 0; i < espacios.length; i++) {
+        var categoria = espacios[i].getAttribute('data-categoria').toLowerCase();
+        var cardColor = window.getComputedStyle(espacios[i].querySelector('.card')).backgroundColor;
+
+        // Mostrar u ocultar las tarjetas según la categoría seleccionada
+        if (filtro === 'todas' || categoria === filtro) {
+            espacios[i].style.display = 'block';
+
+            // Si es la primera tarjeta que coincide y aún no se ha asignado un color, usar su color para el fondo
+            if (!colorAsignado && filtro !== 'todas') {
+                mainContainer.style.backgroundColor = lightenColor(cardColor, 40); // Cambiar a un color más claro
+                colorAsignado = true; // Marcar que ya se ha asignado el color
             }
+        } else {
+            espacios[i].style.display = 'none';
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        <?php foreach ($espacios as $espacio): ?>
-            (function() {
-                const spaceId = '<?= $espacio['id'] ?>';
+    // Si no hay tarjetas visibles, volver al color por defecto
+    if (!colorAsignado) {
+        mainContainer.style.backgroundColor = '#fff'; // O el color de fondo que prefieras
+    }
+}
 
-                // Verificar si la alarma ya fue disparada para este espacio en localStorage
-                let alarmTriggered = localStorage.getItem(`alarmTriggered_${spaceId}`) === "true";
+// Función para aclarar un color
+function lightenColor(color, percent) {
+    var rgbValues = color.match(/\d+/g).map(Number); // Extraer valores RGB
 
-                // Función que actualiza el display de tiempo para un espacio específico
-                function refreshDisplay() {
-                    const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
-                    const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
-                    const countdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
-                    const isPaused = localStorage.getItem(`isPaused_${spaceId}`) === "true";
-                    const pausedAt = parseInt(localStorage.getItem(`pausedAt_${spaceId}`)) || null;
+    var r = Math.min(255, Math.round(rgbValues[0] + (255 - rgbValues[0]) * percent / 100));
+    var g = Math.min(255, Math.round(rgbValues[1] + (255 - rgbValues[1]) * percent / 100));
+    var b = Math.min(255, Math.round(rgbValues[2] + (255 - rgbValues[2]) * percent / 100));
 
-                    let displayTime = "00:00:00";
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
 
-                    if (startTime > 0) {
-                        const currentTime = new Date().getTime();
-                        let elapsedTime = Math.floor((currentTime - startTime) / 1000);
+document.addEventListener('DOMContentLoaded', function () {
+    <?php foreach ($espacios as $espacio): ?>
+        (function() {
+            const spaceId = '<?= $espacio['id'] ?>';
+            let alarmTriggered = localStorage.getItem(`alarmTriggered_${spaceId}`) === "true";
 
-                        // Si está en pausa, mostrar el tiempo al momento de la pausa
-                        if (isPaused && pausedAt) {
-                            elapsedTime = Math.floor((pausedAt - startTime) / 1000);
-                        }
+            function refreshDisplay() {
+                const isStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`) === "true";
+                const startTime = parseInt(localStorage.getItem(`startTime_${spaceId}`)) || 0;
+                const countdownTime = parseInt(localStorage.getItem(`countdownTime_${spaceId}`)) || 0;
+                const isPaused = localStorage.getItem(`isPaused_${spaceId}`) === "true";
+                const pausedAt = parseInt(localStorage.getItem(`pausedAt_${spaceId}`)) || null;
 
-                        if (isStopwatch) {
-                            displayTime = formatTime(elapsedTime);
-                        } else {
-                            const remainingTime = countdownTime - elapsedTime;
-                            displayTime = formatTime(Math.max(remainingTime, 0));
+                let displayTime = "00:00:00";
 
-                            // Si el tiempo restante es 0 o menor y la alarma aún no se ha disparado
-                            if (remainingTime <= 0 && !alarmTriggered) {
-                                triggerAlarm(); // Mostrar la alarma
-                                // Guardar en localStorage que la alarma ya fue disparada solo después de que se dispara
-                                alarmTriggered = true; 
-                                localStorage.setItem(`alarmTriggered_${spaceId}`, "true");
-                            }
-                        }
+                if (startTime > 0) {
+                    const currentTime = new Date().getTime();
+                    let elapsedTime = Math.floor((currentTime - startTime) / 1000);
+
+                    if (isPaused && pausedAt) {
+                        elapsedTime = Math.floor((pausedAt - startTime) / 1000);
                     }
 
-                    // Actualizar la visualización de tiempo en el tablero
-                    document.getElementById(`timer-display-${spaceId}`).textContent = displayTime;
-                    document.getElementById(`timer-status-${spaceId}`).textContent = startTime > 0 ? (isPaused ? 'Pausado' : 'En curso') : 'Inactivo';
+                    if (isStopwatch) {
+                        displayTime = formatTime(elapsedTime);
+                    } else {
+                        const remainingTime = countdownTime - elapsedTime;
+                        displayTime = formatTime(Math.max(remainingTime, 0));
+
+                        if (remainingTime <= 0 && !alarmTriggered) {
+                            triggerAlarm(); 
+                            alarmTriggered = true; 
+                            localStorage.setItem(`alarmTriggered_${spaceId}`, "true");
+                        }
+                    }
                 }
 
+                document.getElementById(`timer-display-${spaceId}`).textContent = displayTime;
+                document.getElementById(`timer-status-${spaceId}`).textContent = startTime > 0 ? (isPaused ? 'Pausado' : 'En curso') : 'Inactivo';
+            }
+
+            refreshDisplay();
+
+            setInterval(() => {
                 refreshDisplay();
+            }, 1000);
 
-                // Inicia el intervalo para actualizar el display en tiempo real cada segundo
-                setInterval(() => {
-                    refreshDisplay();
-                }, 1000);
+            function triggerAlarm() {
+                const alarmSound = document.getElementById('alarm-sound');
+                alarmSound.play();
 
-                // Función para mostrar la alarma usando SweetAlert y reproducir sonido
-                function triggerAlarm() {
-                    const alarmSound = document.getElementById('alarm-sound');
-                    alarmSound.play();
+                Swal.fire({
+                    title: '¡Tiempo terminado!',
+                    text: 'El tiempo del espacio ha llegado a su fin.',
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        })();
+    <?php endforeach; ?>
+});
 
-                    Swal.fire({
-                        title: '¡Tiempo terminado!',
-                        text: 'El tiempo del espacio ha llegado a su fin.',
-                        icon: 'warning',
-                        confirmButtonText: 'Aceptar'
-                    });
-                }
-            })();
-        <?php endforeach; ?>
-    });
-
-    // Función para formatear el tiempo en HH:MM:SS
-    function formatTime(seconds) {
-        if (isNaN(seconds) || seconds < 0) return "00:00:00";
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
+// Función para formatear el tiempo en HH:MM:SS
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return "00:00:00";
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

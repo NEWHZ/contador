@@ -5,64 +5,69 @@ let countdownTime = 0;
 let isPaused = true;
 let currentSpaceId = null;
 let pausedAt = null;
-
+let currentMaxTimeLimit = null; 
 // Función que abre el modal con el temporizador correspondiente a una tarjeta
-function openTimerModal(spaceId) {
-	currentSpaceId = spaceId;
+function openTimerModal(spaceId, tiempoLimite) {
+    currentSpaceId = spaceId;
+    currentMaxTimeLimit = parseFloat(tiempoLimite); // Guardar el límite de tiempo como decimal
+
+    // Mostrar alerta con el límite de tiempo
+    Swal.fire({
+        icon: "info",
+        title: "Límite de tiempo",
+        text: `El tiempo máximo permitido para esta categoría es de ${currentMaxTimeLimit} horas.`,
+        confirmButtonText: "Aceptar"
+    }).then(() => {
+        resetModal(); // Resetear la interfaz
+        // Código para cargar estado del temporizador (el mismo que tenías)
+    });
+
 
 	// Cargar el estado del temporizador desde localStorage
-	const storedStartTime = localStorage.getItem(`startTime_${spaceId}`);
-	const storedPausedState = localStorage.getItem(`isPaused_${spaceId}`);
-	const storedIsStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`);
-	const storedTimeElapsed = localStorage.getItem(`timeElapsed_${spaceId}`);
-	const storedPausedAt = localStorage.getItem(`pausedAt_${spaceId}`);
-	const storedCountdownTime = localStorage.getItem(`countdownTime_${spaceId}`);
-
+	 // Cargar el estado del temporizador desde localStorage
+	 const storedStartTime = localStorage.getItem(`startTime_${spaceId}`);
+	 const storedPausedState = localStorage.getItem(`isPaused_${spaceId}`);
+	 const storedIsStopwatch = localStorage.getItem(`isStopwatch_${spaceId}`);
+	 const storedTimeElapsed = localStorage.getItem(`timeElapsed_${spaceId}`);
+	 const storedPausedAt = localStorage.getItem(`pausedAt_${spaceId}`);
+	 const storedCountdownTime = localStorage.getItem(`countdownTime_${spaceId}`);
+ 
 	// Restablecer la UI del modal
 	document.getElementById("initial-content").style.display = "block";
 	document.getElementById("timer-controls").style.display = "none";
 
 	// Si hay un preset duplicado, eliminarlo
 	const presetContainer = document.getElementById("preset-container");
-	if (presetContainer) presetContainer.remove();
-
-	// Limpiar cualquier intervalo anterior para evitar múltiples intervalos
-	clearInterval(timerInterval);
-
 	if (storedStartTime !== null) {
-		timeElapsed = parseInt(storedTimeElapsed) || 0;
-		countdownTime = parseInt(storedCountdownTime) || 0;
-		pausedAt = storedPausedAt ? parseInt(storedPausedAt) : null;
-		isPaused = storedPausedState === "true";
-		isStopwatch = storedIsStopwatch === "true";
+        // Mostrar el temporizador en lugar del menú de selección
+        timeElapsed = parseInt(storedTimeElapsed) || 0;
+        countdownTime = parseInt(storedCountdownTime) || 0;
+        pausedAt = storedPausedAt ? parseInt(storedPausedAt) : null;
+        isPaused = storedPausedState === "true";
+        isStopwatch = storedIsStopwatch === "true";
 
-		document.getElementById("initial-content").style.display = "none";
-		document.getElementById("timer-controls").style.display = "block";
-		document.getElementById("timer-type").textContent = isStopwatch
-			? "StopWatch Active"
-			: "Countdown Active";
+        // Mostrar el contenido del temporizador activo
+        document.getElementById("initial-content").style.display = "none";
+        document.getElementById("timer-controls").style.display = "block";
+        document.getElementById("timer-type").textContent = isStopwatch ? "StopWatch Active" : "Countdown Active";
 
-		// Mostrar el tiempo actual inmediatamente sin esperar
-		updateDisplay();
+        updateDisplay(); // Mostrar el tiempo actual inmediatamente
 
-		// Si no está pausado, continuar calculando el tiempo
-		if (!isPaused) {
-			startTimer(); // Iniciar el temporizador
-			document.getElementById("startPauseBtn").textContent = "Pausar";
-			document
-				.getElementById("startPauseBtn")
-				.classList.remove("btn-success", "btn-primary");
-			document.getElementById("startPauseBtn").classList.add("btn-warning");
-		} else {
-			document.getElementById("startPauseBtn").textContent = "Continuar";
-			document
-				.getElementById("startPauseBtn")
-				.classList.remove("btn-success", "btn-warning");
-			document.getElementById("startPauseBtn").classList.add("btn-primary");
-		}
-	} else {
-		resetTimer();
-	}
+        if (!isPaused) {
+            startTimer(); // Continuar con el temporizador si no está pausado
+            document.getElementById("startPauseBtn").textContent = "Pausar";
+            document.getElementById("startPauseBtn").classList.remove("btn-primary", "btn-success");
+            document.getElementById("startPauseBtn").classList.add("btn-warning");
+        } else {
+            document.getElementById("startPauseBtn").textContent = "Continuar";
+            document.getElementById("startPauseBtn").classList.remove("btn-warning");
+            document.getElementById("startPauseBtn").classList.add("btn-primary");
+        }
+    } else {
+        // Si no hay temporizador activo, mostrar el menú de selección (Stopwatch o Countdown)
+        document.getElementById("initial-content").style.display = "block";
+        document.getElementById("timer-controls").style.display = "none";
+    }
 }
 
 // Muestra las opciones del cronómetro
@@ -84,101 +89,132 @@ function showStopwatch() {
 }
 
 // Muestra las opciones del countdown con presets
+// Muestra las opciones del countdown con presets
 function showCountdown() {
-	document.getElementById("initial-content").style.display = "none"; // Ocultar elección inicial
-	document.getElementById("timer-controls").style.display = "block"; // Mostrar controles
-	document.getElementById("timer-type").textContent = "Countdown Active"; // Mostrar que countdown está activo
-	isStopwatch = false; // Desactivar stopwatch
+    document.getElementById("initial-content").style.display = "none"; // Ocultar elección inicial
+    document.getElementById("timer-controls").style.display = "block"; // Mostrar controles
+    document.getElementById("timer-type").textContent = "Countdown Active"; // Mostrar que countdown está activo
+    isStopwatch = false; // Desactivar stopwatch
 
-	// Mostrar el selector de horas y minutos para Countdown
-	document.getElementById("countdown-settings").style.display = "block"; // Mostrar la selección de tiempo
+    // Mostrar el selector de horas y minutos para Countdown
+    document.getElementById("countdown-settings").style.display = "block";
 	document.getElementById("startPauseBtn").style.display = "none"; // Ocultar botón hasta que se seleccione tiempo
 	document.getElementById("resetBtn").style.display = "none"; // Ocultar reset
 	document.getElementById("terminateBtn").style.display = "none"; // Ocultar terminar
+ // Mostrar la selección de tiempo
 }
+ // Mostrar la selección de tiempo
+	
 
 // Establecer un tiempo de cuenta regresiva de los presets
 function setCountdown(seconds) {
-	countdownTime = seconds;
-	timeElapsed = 0; // Reset timeElapsed since we're starting fresh
-	isPaused = true;
-	localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
-	localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
-	updateDisplay();
+    countdownTime = seconds;
+    timeElapsed = 0; // Reset timeElapsed since we're starting fresh
+    isPaused = true;
+    localStorage.setItem(`isStopwatch_${currentSpaceId}`, "false");
+    localStorage.setItem(`countdownTime_${currentSpaceId}`, countdownTime);
+    updateDisplay();
 }
 
+// Modifica el temporizador para que no permita tiempos mayores al límite de la categoría
 function setCustomTime() {
-	const hours = parseInt(document.getElementById("hours").value); // Obtener horas seleccionadas
-	const minutes = parseInt(document.getElementById("minutes").value); // Obtener minutos seleccionados
+    const hours = parseInt(document.getElementById("hours").value); // Obtener horas seleccionadas
+    const minutes = parseInt(document.getElementById("minutes").value); // Obtener minutos seleccionados
 
-	// Validar que se haya seleccionado un tiempo válido
-	if (hours === 0 && minutes === 0) {
-		Swal.fire({
-			icon: "error",
-			title: "Error",
-			text: "Por favor selecciona un tiempo válido mayor que cero.",
-		});
-		return; // Si no se seleccionó un tiempo válido, detener la ejecución
-	}
+    // Convertir el tiempo a horas decimales
+    const totalHours = hours + minutes / 60;
 
-	// Convertir el tiempo a segundos
-	const totalSeconds = hours * 3600 + minutes * 60;
+    // Redondear el total de horas a dos decimales para evitar problemas de precisión
+    const totalHoursRounded = Math.round(totalHours * 100) / 100;
+    const maxTimeRounded = Math.round(currentMaxTimeLimit * 100) / 100;
 
-	// Establecer el countdown
-	setCountdown(totalSeconds);
+    // Validar que no exceda el límite de tiempo
+    if (totalHoursRounded > maxTimeRounded) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `No puedes asignar más de ${currentMaxTimeLimit.toFixed(2)} horas.`
+        });
+        return;
+    }
 
-	// Mostrar los botones de control una vez que se ha establecido el tiempo
-	document.getElementById("startPauseBtn").style.display = "inline-block";
-	document.getElementById("resetBtn").style.display = "inline-block";
-	document.getElementById("terminateBtn").style.display = "inline-block";
+    // Convertir el tiempo a segundos
+    const totalSeconds = totalHoursRounded * 3600;
 
-	// Ocultar la selección de horas y minutos
-	document.getElementById("countdown-settings").style.display = "none";
+    // Establecer el countdown
+    setCountdown(totalSeconds);
+
+    // Mostrar los botones de control una vez que se ha establecido el tiempo
+    document.getElementById("startPauseBtn").style.display = "inline-block";
+    document.getElementById("resetBtn").style.display = "inline-block";
+    document.getElementById("terminateBtn").style.display = "inline-block";
+
+    // Ocultar la selección de horas y minutos
+    document.getElementById("countdown-settings").style.display = "none";
 }
+
+
 
 // Establecer un tiempo de cuenta regresiva personalizado
 function setCustomCountdown() {
-	const customTime = parseInt(document.getElementById("customCountdown").value);
-	if (!isNaN(customTime) && customTime > 0) {
-		setCountdown(customTime);
-	} else {
-		Swal.fire({
-			icon: "error",
-			title: "Error",
-			text: "Please enter a valid number of seconds",
-		});
-	}
+    const hours = parseInt(document.getElementById("hours").value); // Obtener horas seleccionadas
+    const minutes = parseInt(document.getElementById("minutes").value); // Obtener minutos seleccionados
+    const totalHours = hours + minutes / 60;
+
+    // Validar el límite antes de continuar
+    if (totalHours > currentMaxTimeLimit) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `No puedes asignar más de ${currentMaxTimeLimit} horas.`,
+        });
+        return;
+    }
+
+    const totalSeconds = totalHours * 3600;
+    setCountdown(totalSeconds);
 }
 
 // Controla el botón de iniciar/pausar
 function startPauseTimer() {
-	const startPauseBtn = document.getElementById("startPauseBtn");
+    const startPauseBtn = document.getElementById("startPauseBtn");
 
-	if (isPaused) {
-		// Si estaba pausado, reiniciamos el tiempo de inicio
-		localStorage.setItem(`startTime_${currentSpaceId}`, new Date().getTime());
-		pausedAt = null; // Reiniciamos la pausa
-		localStorage.removeItem(`pausedAt_${currentSpaceId}`);
+    if (isPaused) {
+        // Si estaba pausado, reiniciamos el tiempo de inicio
+        localStorage.setItem(`startTime_${currentSpaceId}`, new Date().getTime());
+        pausedAt = null; // Reiniciamos la pausa
+        localStorage.removeItem(`pausedAt_${currentSpaceId}`);
 
-		startTimer(); // Iniciar el temporizador actual
-		startPauseBtn.textContent = "Pausar";
-		startPauseBtn.classList.remove("btn-primary", "btn-success");
-		startPauseBtn.classList.add("btn-warning");
-		isPaused = false;
-	} else {
-		// Al pausar, guardamos el tiempo actual
-		pausedAt = new Date().getTime();
-		localStorage.setItem(`pausedAt_${currentSpaceId}`, pausedAt);
-		pauseTimer();
-		startPauseBtn.textContent = "Continuar";
-		startPauseBtn.classList.remove("btn-warning");
-		startPauseBtn.classList.add("btn-primary");
-		isPaused = true;
-	}
+        startTimer(); // Iniciar el temporizador actual
+        startPauseBtn.textContent = "Pausar";
+        startPauseBtn.classList.remove("btn-primary", "btn-success");
+        startPauseBtn.classList.add("btn-warning");
+        isPaused = false;
+    } else {
+        // Al pausar, verificamos que no exceda el tiempo límite
+        const totalHoursElapsed = timeElapsed / 3600;
+        if (totalHoursElapsed > currentMaxTimeLimit) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `Has excedido el tiempo límite de ${currentMaxTimeLimit} horas.`
+            });
+            return;
+        }
 
-	// Guardar el estado actual en localStorage
-	localStorage.setItem(`isPaused_${currentSpaceId}`, isPaused);
-	localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed);
+        // Guardar el tiempo actual
+        pausedAt = new Date().getTime();
+        localStorage.setItem(`pausedAt_${currentSpaceId}`, pausedAt);
+        pauseTimer();
+        startPauseBtn.textContent = "Continuar";
+        startPauseBtn.classList.remove("btn-warning");
+        startPauseBtn.classList.add("btn-primary");
+        isPaused = true;
+    }
+
+    // Guardar el estado actual en localStorage
+    localStorage.setItem(`isPaused_${currentSpaceId}`, isPaused);
+    localStorage.setItem(`timeElapsed_${currentSpaceId}`, timeElapsed);
 }
 
 // Inicia el temporizador
@@ -203,12 +239,23 @@ $("#timerModal").on("hidden.bs.modal", function () {
 });
 
 // Función para resetear la interfaz del modal
+// Función para resetear la interfaz del modal
 function resetModal() {
-	document.getElementById("initial-content").style.display = "block"; // Mostrar la elección de temporizador
-	document.getElementById("timer-controls").style.display = "none"; // Ocultar controles del temporizador
-	document.getElementById("countdown-settings").style.display = "none"; // Ocultar selección de tiempo
-	document.getElementById("timer-display").textContent = "00:00:00"; // Restablecer display de tiempo
+    const storedStartTime = localStorage.getItem(`startTime_${currentSpaceId}`);
+    
+    // Si ya hay un temporizador corriendo, no permitir mostrar el menú de selección
+    if (storedStartTime) {
+        document.getElementById("initial-content").style.display = "none"; // Ocultar la elección de temporizador
+        document.getElementById("timer-controls").style.display = "block"; // Mostrar controles del temporizador
+    } else {
+        document.getElementById("initial-content").style.display = "block"; // Mostrar la elección de temporizador
+        document.getElementById("timer-controls").style.display = "none"; // Ocultar controles del temporizador
+        document.getElementById("timer-display").textContent = "00:00:00"; // Restablecer display de tiempo
+    }
+
+    document.getElementById("countdown-settings").style.display = "none"; // Ocultar selección de tiempo
 }
+
 
 // Función para reiniciar el temporizador
 function resetTimer() {
@@ -381,20 +428,14 @@ function calculateAndDisplayTime() {
 
 // Actualiza el display al cargar
 function updateDisplay() {
-	if (isStopwatch) {
-		const currentTimeElapsed =
-			parseInt(localStorage.getItem(`timeElapsed_${currentSpaceId}`)) || 0;
-		document.getElementById("timer-display").textContent =
-			formatTime(currentTimeElapsed);
-	} else {
-		const remainingTime =
-			parseInt(localStorage.getItem(`countdownTime_${currentSpaceId}`)) ||
-			countdownTime;
-		document.getElementById("timer-display").textContent =
-			formatTime(remainingTime);
-	}
+    if (isStopwatch) {
+        const currentTimeElapsed = parseInt(localStorage.getItem(`timeElapsed_${currentSpaceId}`)) || 0;
+        document.getElementById("timer-display").textContent = formatTime(currentTimeElapsed);
+    } else {
+        const remainingTime = parseInt(localStorage.getItem(`countdownTime_${currentSpaceId}`)) || countdownTime;
+        document.getElementById("timer-display").textContent = formatTime(remainingTime);
+    }
 }
-
 // Formatea el tiempo en HH:MM:SS
 function formatTime(seconds) {
 	const hrs = Math.floor(seconds / 3600);
@@ -503,3 +544,17 @@ document.addEventListener("visibilitychange", () => {
 		syncTimerData(); // Enviar datos cuando la pestaña se oculta
 	}
 });
+// Función para regresar al menú de selección (Stopwatch/Countdown)
+function returnToSelection() {
+    const storedStartTime = localStorage.getItem(`startTime_${currentSpaceId}`);
+
+    // Si hay un temporizador corriendo, no permitir regresar al menú de selección
+    if (storedStartTime) {
+        return; // No hacer nada si ya hay un temporizador en curso
+    }
+
+    // Si no hay temporizador, regresar al menú de selección
+    document.getElementById("timer-controls").style.display = "none";
+    document.getElementById("countdown-settings").style.display = "none";
+    document.getElementById("initial-content").style.display = "block"; // Mostrar menú de selección
+}
