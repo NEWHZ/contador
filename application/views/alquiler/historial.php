@@ -218,8 +218,10 @@
 <!-- Incluir Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<?php include APPPATH . 'views/widget/weather.php'; ?>
 <!-- Incluir el script de temporizador en la vista de historial -->
 <script src="<?php echo base_url('assets/js/timer-core.js'); ?>"></script>
+
 
 </body>
 </html>

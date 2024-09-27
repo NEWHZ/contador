@@ -341,5 +341,6 @@
     }
 </script>
 <script src="<?= base_url('assets/js/espacios.js'); ?>"></script> <!-- Enlace al JS externo -->
+<?php include APPPATH . 'views/widget/weather.php'; ?>
 </body>
 </html>
