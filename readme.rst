@@ -1,79 +1,58 @@
-### Finalidad del proyecto
-Este proyecto es una aplicación web que permite a los usuarios utilizar un temporizador y 
-cronómetro interactivo con opciones de personalización. Los usuarios pueden ajustar el 
-tiempo de la cuenta regresiva, cambiar el color de fondo al finalizar y activar una alerta 
-sonora. La idea detrás del proyecto es crear una herramienta sencilla pero eficaz para tareas 
-de seguimiento de tiempo, que puede ser utilizada en múltiples contextos, como estudio, 
-trabajo o actividades físicas.
+# *Contador - Temporizador y Widget Meteorológico*
 
+### *Descripción del Proyecto*
+Este proyecto es una aplicación web que combina un temporizador/cronómetro funcional con un widget meteorológico que muestra el clima de la *ubicación actual* del usuario, utilizando la API de RapidAPI. Los usuarios pueden ver en tiempo real las condiciones climáticas, como la temperatura y humedad, mientras utilizan el temporizador para gestionar actividades. El temporizador también permite personalizar la cuenta regresiva, con alertas sonoras y cambios en el color de fondo al finalizar.
 
-### Requisitos
+---
+
+### *Requisitos*
 Antes de comenzar, asegúrate de tener los siguientes requisitos instalados en tu sistema:
 
--Apache:
-Versión: Apache/2.4.52 (Ubuntu)
-Compilado: 2024-07-17T18:57:26
+- *Apache*: 
+  - Versión: Apache/2.4.52
+  
+- *PHP*: 
+  - Versión: PHP 7.3.33-20
+  
+- *MySQL*: 
+  - Versión: 8.0.39
+  
+- *CodeIgniter*: 
+  - Versión: 3.x
 
--PHP:
-Versión: PHP 7.3.33-20+ubuntu22.04.1+deb.sury.org+1 (CLI)
-Compilado: Aug 2 2024 16:18:50
-Zend Engine: v3.3.33
-Zend OPcache: v7.3.33-20+ubuntu22.04.1+deb.sury.org+1
+---
 
--MySQL*
-Versión: 8.0.39-0ubuntu0.22.04.1
-Sistema operativo: Linux (Ubuntu)
+### *Instalación del Proyecto*
 
--codeigniter 3
+#### *1. Instalación Local*
+1. *Clonar el repositorio*:  
+   Ejecuta el siguiente comando en tu terminal:
+   bash
+   git clone https://github.com/NEWHZ/contador
+   
+   
+2. *Mover los archivos*:  
+   Coloca los archivos clonados en el directorio de tu servidor local:
+   - Para *XAMPP*: htdocs/.
+   - Para *WAMP*: www/.
 
-### Instalación del proyecto: 
---local
-Clonar el repositorio: Ejecuta el siguiente comando en tu terminal:
-git clone https://github.com/NEWHZ/contador
-Mover los archivos: Coloca los archivos clonados en el directorio de tu servidor local. Para XAMPP, deberías moverlos a la carpeta htdocs/. Para WAMP, dentro de www/.
-Acceder a la aplicación: Abre un navegador y accede a la siguiente URL: http://localhost/contador/index.php.
+3. *Acceder a la aplicación*:  
+   Abre un navegador web y accede a la siguiente URL:  
+   
+   http://localhost/contador/index.php
+   
 
-Crear la base de datos, y asignar el archivo database.php en Application/config 
+#### *2. Configuración de la Base de Datos*
+1. *Crear la base de datos*:  
+   Usa el script SQL incluido en el proyecto para crear la base de datos. El archivo se encuentra en:  
+   
+   contador_schema_with_db.sql
+   
 
---Entorno de AWS/EC2
+2. *Importar el esquema*:  
+   Importa el archivo SQL en tu sistema de gestión de bases de datos para crear las tablas necesarias para el proyecto.
 
-Crear una instancia, elegir sistema operativo(este proyecto se uso ubuntu de 64bits x86, el tipo de instancia es t2.micro, usar la llave .pem, se hilito el trafico htttp y https, se uso almacenamiento de 8gb y gp3 volumen de raiz, se lanza instancia.)
+---
 
-Hayy que conectarse por medio de ssh desde una terminal(ssh -i "(la llave .pem)" ubuntu@(se colocala el DNS de la instancia))
-
-luego se instala las versiones de apache, php y mysql ya mencionados.
-
-Se crea la base de datos
-moverse a /var/www/html
-se clona el proyecto: git clone https://github.com/NEWHZ/contador
-
-Asignar el archivo database.php en Application/config 
-
-Cambiar la url en Application/config/config.php y colocar la ip 
-
-### Características de Código Abierto
-	Este proyecto es **de código abierto**, lo que significa que es libre para usar, modificar 	y distribuir. Cualquiera puede contribuir al desarrollo, mejorar las funcionalidades existentes o adaptar la aplicación según sus necesidades.
-
-### Acceso al Código Fuente
-	El código fuente de este proyecto está disponible en 
-	[GitHub]https://github.com/NEWHZ/contador.git 
-
-### Licencia
-	Este proyecto está licenciado bajo la [Licencia MIT](LICENSE). Puedes consultar el 
-	archivo de licencia para más detalles.
-
-### Contribuciones
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor sigue estos pasos:
-
-	Haz un fork del proyecto.
-	Crea una nueva rama (git checkout -b feature/nueva-funcionalidad).
-	Realiza tus cambios y haz commit (git commit -m 'Añadir nueva funcionalidad').
-	Haz push a la rama (git push origin feature/nueva-funcionalidad).
-	Abre un pull request.
-	
-	Contacto
-	Para cualquier consulta o sugerencia, puedes contactar a cualquiera de los desarrolladores:
-	crequenam@miumg.edu.gt
-	aterrazav2@gmiumg.edu.gt
-	nosoriom1@miumg.edu.gt
-	acastellanosr3@miumg.edu.gt
+### *Widget Meteorológico*
+El widget meteorológico se conecta a una API gratuita de RapidAPI utilizando la función fetch para mostrar el clima en *tiempo real de la ubicación actual* del usuario. Este widget proporciona información detallada sobre la temperatura, la humedad y las condiciones generales del clima, lo que permite al usuario estar informado sobre el entorno mientras gestiona su tiempo con el cronómetro.
